@@ -5,8 +5,8 @@ export interface Product {
   image: string;
   isFavorite: boolean;
   size?: string;
-  country: string;
-  pickupPoint: string;
+  country?: string;
+  pickupPoint?: string;
 }
 
 export interface Friend {

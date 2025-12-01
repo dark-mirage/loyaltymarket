@@ -21,6 +21,14 @@ export default function Home() {
       country: "из Китая"
     },
     { 
+      id: 2, 
+      name: 'Лонгслив Comme Des Garcons Play', 
+      price: '12 990 ₽', 
+      image: '/products/t-shirt-1.png', 
+      isFavorite: true,
+      size: 'от 2 дней',
+    },
+    { 
       id: 3, 
       name: 'Лонгслив Comme des Garcons Play', 
       price: '2 890 ₽', 
