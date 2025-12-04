@@ -1,11 +1,11 @@
 'use client'
-import React from 'react' // ← Добавьте если нужно
-import Header from './components/Header'
+import React from 'react' 
+import Header from './components/Global/Header'
 import SearchBar from './components/SearchBar'
 import CategoryTabs from './components/CategoryTabs'
 import FriendsSection from './components/FriendsSection'
 import ProductSection from './components/ProductSection'
-import Footer from './components/Footer'
+import Footer from './components/Global/Footer'
 import { useState } from 'react'
 import { Product } from './components/types'
 

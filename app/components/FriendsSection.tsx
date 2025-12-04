@@ -50,9 +50,8 @@ const FriendsSection: React.FC = () => {
   ]
 
   const [imgErrorMap, setImgErrorMap] = useState<Record<number, boolean>>({})
-
   return (
-    <div className="px-4 py-3 bg-white">
+    <div className="px-4 py-3 pt-[4px] bg-white">
       {/* Карусель с JS анимацией */}
       <div className="mb-4 overflow-hidden relative">
         <div 
