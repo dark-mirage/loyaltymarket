@@ -18,16 +18,16 @@ const ProductSection: React.FC<ProductSectionProps> = ({
 }) => {
   if (layout === 'horizontal') {
     return (
-      <section className="px-4 py-4">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold">{title}</h2>
-          <button className="text-[12px] text-[#7E7E7E] flex items-center justify-center gap-1 font-medium">
-            <span>все</span>
-            <img className="w-[14px] h-[16px]" src="/icons/global/arrow.svg" alt="arrow" />
+      <section className="px-4 py-4 pt-[13px] pl-[16px] pb-[12px] pr-[0]">
+        <div className="flex items-center justify-between mb-[15px]">
+          <h2 className="text-[20px] font-semibold">{title}</h2>
+          <button className=" text-[#7E7E7E] flex items-center justify-center gap-1 font-medium">
+            <span className='text-[15px]'>все</span>
+            <img className="w-[10px] h-[16px]" src="/icons/global/arrow.svg" alt="arrow" />
           </button>
         </div>
         <div className="relative">
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+          <div className="flex gap-[11px] overflow-x-auto pb-2 scrollbar-hide">
             {products.map((product) => (
               <ProductCard 
                 key={product.id}
@@ -43,9 +43,9 @@ const ProductSection: React.FC<ProductSectionProps> = ({
   }
 
   return (
-    <section className="px-4 py-4">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-semibold">{title}</h2>
+    <section className="px-4 py-4 pt-[0]">
+      <div className="flex items-center justify-between mb-[13px]">
+        <h2 className="text-[21px] font-semibold">{title}</h2>
       </div>
       <div className="grid grid-cols-2 gap-3 gap-y-[21px]">
         {products.map((product) => (

@@ -6,15 +6,15 @@ const FriendsSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null)
   const animationRef = useRef<number>(0)
   const [isPaused, setIsPaused] = useState(false)
-  
-  const cards = ['Наша команда', 'Оплата и сплит', 'Доставка и отслеживание', 'Возврат и обмен']
+
+  const cards = ['Наша команда', 'Оплата \n и сплит', 'Доставка и отслеживание', 'Возврат и обмен']
   const duplicatedCards = [...cards, ...cards]
 
   useEffect(() => {
     if (!containerRef.current || isPaused) return
 
     let position = 0
-    const speed = 0.5 // пикселей за кадр
+    const speed = 0 // пикселей за кадр
     
     const animate = () => {
       if (!containerRef.current) return
@@ -80,18 +80,17 @@ const FriendsSection: React.FC = () => {
 
       {/* Блоки друзей и баллов */}
       <div className="flex gap-2">
-        <div className="flex-1 bg-[var(--items-background)] rounded-[16px] p-[12px] m-w-[180px]">
-          <div className="text-sm font-semibold mb-3">
-            Зовите друзей
-            <br />
-            <span className="text-[12px] font-normal">Дарим скидку 10%</span>
+        <div className="flex-1 bg-[var(--items-background)] rounded-[16px] p-[12px] pt-[15px] pl-[16px] m-w-[180px]">
+          <div className='mb-[19px]'>
+            <span className="block text-[15px] font-semibold mb-[-2px]">Зовите друзей</span>
+            <span className="block text-[13px] font-normal">Дарим скидку 10%</span>
           </div>
           <div className="flex items-center justify-between">
-            <div className="flex -space-x-2">
+            <div className="flex -space-x-2 pl-[-1px] gap-[4px]">
               {friends.map((friend) => (
                 <div
                   key={friend.id}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-xs overflow-hidden"
+                  className="w-[38px] h-[28px] rounded-full flex items-center justify-center text-xs overflow-hidden"
                 >
                   {!imgErrorMap[friend.id] ? (
                     <img
@@ -113,13 +112,12 @@ const FriendsSection: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex-1 bg-[var(--items-background)] rounded-[16px] p-[12px] m-w-[180px]">
-          <div className="text-sm font-semibold mb-3">
-            Баллы
-            <br />
-            <span className="text-[12px] font-normal">1 балл = 1 ₽ </span>
+        <div className="flex-1 bg-[var(--items-background)] rounded-[16px] p-[12px] pt-[15px] pl-[15px] m-w-[180px]">
+          <div className="text-sm font-semibold mb-4">
+            <span className='block text-[15px] font-semibold mb-[-px]'>Баллы</span>
+            <span className="block text-[13px] font-normal">1 балл = 1 ₽ </span>
           </div>
-          <div className="flex items-center text-[23px]">
+          <div className="flex items-center text-[25px]">
             11
           </div>
         </div>

@@ -29,7 +29,7 @@ const BottomNavigation: React.FC = () => {
           <img 
             src="/icons/footer/Poizon.svg" 
             alt="Poizon" 
-            className={`w-6 h-6 ${
+            className={`w-4 h-6 ${
               activeTab === 'poizon' 
                 ? 'filter brightness-0'
                 : 'opacity-60'
@@ -59,7 +59,7 @@ const BottomNavigation: React.FC = () => {
           <img 
             src="/icons/footer/Heart.svg" 
             alt="heart" 
-            className={`w-6 h-6 ${
+            className={`w-5 h-6 ${
               activeTab === 'heart' 
                 ? 'filter brightness-0'
                 : 'opacity-60'
@@ -74,7 +74,7 @@ const BottomNavigation: React.FC = () => {
           <img 
             src="/icons/footer/trach.svg" 
             alt="trash" 
-            className={`w-6 h-6 ${
+            className={`w-5 h-6 ${
               activeTab === 'trash' 
                 ? 'filter brightness-0'
                 : 'opacity-60'
@@ -89,7 +89,7 @@ const BottomNavigation: React.FC = () => {
           <img 
             src="/icons/footer/User.svg" 
             alt="user" 
-            className={`w-6 h-6 ${
+            className={`w-5 h-6 ${
               activeTab === 'user' 
                 ? 'filter brightness-0'
                 : 'opacity-60'

@@ -11,30 +11,31 @@ import { Product } from './components/types'
 
 export default function Home() {
   const [recentProducts, setRecentProducts] = useState<Product[]>([
-    { 
-      id: 1, 
-      name: 'Туфли Prada Monolith Brushed Original Bla...', 
-      price: '112 490 ₽', 
-      image: '/products/shoes-1.png', 
-      isFavorite: false, 
+    {
+      id: 1,
+      name: 'Туфли Prada Monolith Brushed Original Bla...',
+      price: '112 490 ₽',
+      image: '/products/shoes-1.png',
+      isFavorite: false,
       size: 'с 30 мар',
       country: "из Китая"
     },
-    { 
+    {
       id: 2, 
       name: 'Лонгслив Comme Des Garcons Play', 
       price: '12 990 ₽', 
       image: '/products/t-shirt-1.png', 
       isFavorite: true,
       size: 'от 2 дней',
+      country: "в Пвз"
     },
-    { 
+    {
       id: 3, 
-      name: 'Лонгслив Comme des Garcons Play', 
+      name: 'Футболка Daze', 
       price: '2 890 ₽', 
-      image: '/products/t-shirt-1.png', 
+      image: '/products/t-shirt-2.png', 
       isFavorite: false, 
-      size: 'от 2 дней',
+      size: 'C 30 мар',
       pickupPoint: "в ПВЗ"
     },
     { 
