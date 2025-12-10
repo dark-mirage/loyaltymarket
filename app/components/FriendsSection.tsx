@@ -1,7 +1,7 @@
 'use client'
 import React, { useRef, useEffect, useState } from 'react'
 import InfoCard from './InfoCard'
-import  Link  from "next/link"
+import { Link } from "react-router-dom"
 
 
 const FriendsSection: React.FC = () => {
