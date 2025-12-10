@@ -1,7 +1,7 @@
 'use client'
 import React, { useRef, useEffect, useState } from 'react'
 import InfoCard from './InfoCard'
-import { Link } from "react-router-dom"
+import  Link  from "next/link"
 
 
 const FriendsSection: React.FC = () => {
@@ -82,7 +82,7 @@ const FriendsSection: React.FC = () => {
 
       {/* Блоки друзей и баллов */}
       <div className="flex gap-2">
-        <Link to="/invite-friends">
+        <Link href="/invite-friends">
         <div className="flex-1 bg-[var(--items-background)] rounded-[16px] p-[12px] pt-[15px] pl-[16px] m-w-[180px]">
           <div className='mb-[19px]'>
             <span className="block text-[15px] font-semibold mb-[-2px]">Зовите друзей</span>
@@ -116,13 +116,15 @@ const FriendsSection: React.FC = () => {
         </Link>
 
         <div className="flex-1 bg-[var(--items-background)] rounded-[16px] p-[12px] pt-[15px] pl-[15px] m-w-[180px]">
-          <div className="text-sm font-semibold mb-4">
-            <span className='block text-[15px] font-semibold mb-[-px]'>Баллы</span>
-            <span className="block text-[13px] font-normal">1 балл = 1 ₽ </span>
-          </div>
-          <div className="flex items-center text-[25px]">
-            11
-          </div>
+          <Link href="/promo">
+            <div className="text-sm font-semibold mb-4">
+              <span className='block text-[15px] font-semibold mb-[-px]'>Баллы</span>
+              <span className="block text-[13px] font-normal">1 балл = 1 ₽ </span>
+            </div>
+            <div className="flex items-center text-[25px]">
+              11
+            </div>
+          </Link>
         </div>
       </div>
     </div>

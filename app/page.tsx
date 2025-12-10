@@ -5,8 +5,8 @@ import CategoryTabs from './components/CategoryTabs'
 import FriendsSection from './components/FriendsSection'
 import ProductSection from './components/ProductSection'
 import Footer from './components/layout/Footer'
-import { useState } from 'react'
 import { Product } from './components/types'
+import { useState } from 'react'
 
 export default function Home() {
   const [recentProducts, setRecentProducts] = useState<Product[]>([
