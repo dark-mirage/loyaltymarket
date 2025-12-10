@@ -1,7 +1,8 @@
 'use client'
 import React, { useRef, useEffect, useState } from 'react'
 import InfoCard from './InfoCard'
-import { Link } from "react-router-dom"
+import Link from 'next/link'
+
 
 
 const FriendsSection: React.FC = () => {
@@ -82,7 +83,7 @@ const FriendsSection: React.FC = () => {
 
       {/* Блоки друзей и баллов */}
       <div className="flex gap-2">
-        <Link to="/invite-friends">
+        <Link href="/invite-friends">
         <div className="flex-1 bg-[var(--items-background)] rounded-[16px] p-[12px] pt-[15px] pl-[16px] m-w-[180px]">
           <div className='mb-[19px]'>
             <span className="block text-[15px] font-semibold mb-[-2px]">Зовите друзей</span>
