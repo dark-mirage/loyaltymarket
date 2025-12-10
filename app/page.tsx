@@ -1,11 +1,10 @@
 'use client'
-import React from 'react' 
-import Header from './components/Global/Header'
+import Header from './components/layout/Header'
 import SearchBar from './components/SearchBar'
 import CategoryTabs from './components/CategoryTabs'
 import FriendsSection from './components/FriendsSection'
 import ProductSection from './components/ProductSection'
-import Footer from './components/Global/Footer'
+import Footer from './components/layout/Footer'
 import { useState } from 'react'
 import { Product } from './components/types'
 
@@ -27,7 +26,7 @@ export default function Home() {
       image: '/products/t-shirt-1.png', 
       isFavorite: true,
       size: 'от 2 дней',
-      country: "в Пвз"
+      country: "из наличия"
     },
     {
       id: 3, 
@@ -36,7 +35,7 @@ export default function Home() {
       image: '/products/t-shirt-2.png', 
       isFavorite: false, 
       size: 'C 30 мар',
-      pickupPoint: "в ПВЗ"
+      pickupPoint: "из наличия"
     },
     { 
       id: 8, 
@@ -45,7 +44,7 @@ export default function Home() {
       image: '/products/t-shirt-2.png', 
       isFavorite: false, 
       size: 'С 30 мар',
-      pickupPoint: "в ПВЗ"
+      pickupPoint: "из наличия"
     },
     { 
       id: 9, 
@@ -54,7 +53,7 @@ export default function Home() {
       image: '/products/t-shirt-2.png', 
       isFavorite: true,
       size: 'С 30 мар',
-      pickupPoint: "в ПВЗ"
+      pickupPoint: "из наличия"
     },
   ]);
 
@@ -66,7 +65,7 @@ export default function Home() {
       image: '/products/t-shirt-1.png', 
       isFavorite: false, 
       size: 'От 2 дней',
-      pickupPoint: "в ПВЗ"
+      pickupPoint: "из наличия"
     },
     { 
       id: 5, 
@@ -93,7 +92,7 @@ export default function Home() {
       image: '/products/shoes-2.png', 
       isFavorite: true, 
       size: 'От 2 дней',
-      pickupPoint: "в ПВЗ"
+      pickupPoint: "из наличия"
     },
   ]);
 

@@ -1,6 +1,8 @@
 'use client'
 import React, { useRef, useEffect, useState } from 'react'
 import InfoCard from './InfoCard'
+import { Link } from "react-router-dom"
+
 
 const FriendsSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -80,6 +82,7 @@ const FriendsSection: React.FC = () => {
 
       {/* Блоки друзей и баллов */}
       <div className="flex gap-2">
+        <Link to="/invite-friends">
         <div className="flex-1 bg-[var(--items-background)] rounded-[16px] p-[12px] pt-[15px] pl-[16px] m-w-[180px]">
           <div className='mb-[19px]'>
             <span className="block text-[15px] font-semibold mb-[-2px]">Зовите друзей</span>
@@ -105,12 +108,12 @@ const FriendsSection: React.FC = () => {
                 </div>
               ))}
             </div>
-
             <button className="w-8 h-8 rounded-full bg-white   flex items-center justify-center text-xl ml-3">
               <img src="/icons/home-main/plus.svg" alt="plus" />
             </button>
           </div>
         </div>
+        </Link>
 
         <div className="flex-1 bg-[var(--items-background)] rounded-[16px] p-[12px] pt-[15px] pl-[15px] m-w-[180px]">
           <div className="text-sm font-semibold mb-4">
