@@ -13,7 +13,7 @@ const BottomNavigation: React.FC = () => {
           className="flex flex-col items-center py-1 mr-[40px]"
         >
           <img 
-            src="/icons/footer/Home.svg" 
+            src="/icons/footer/Home.svg"
             alt="home" 
             className={`w-6 h-6 ${
               activeTab === 'home' 
