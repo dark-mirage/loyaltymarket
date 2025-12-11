@@ -1,7 +1,6 @@
 'use client'
 import React, { useState } from 'react';
 
-
 const BottomNavigation: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
   // Базовый путь к иконкам — поправьте здесь, если иконки лежат не в public/icons/footer
@@ -9,7 +8,7 @@ const BottomNavigation: React.FC = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t">
-      <div className="flex py-2 pb-[40px] pl-[23px]">
+      <div className="flex py-2 pb-[40px] ">
         <button
           onClick={() => setActiveTab('home')}
           className="flex flex-col items-center py-1 mr-[40px]"
