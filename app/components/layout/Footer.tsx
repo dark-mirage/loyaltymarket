@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 
 const BottomNavigation: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
+  // Базовый путь к иконкам — поправьте здесь, если иконки лежат не в public/icons/footer
+  const ICONS_PATH = '/icons/footer';
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t">
@@ -13,7 +15,7 @@ const BottomNavigation: React.FC = () => {
           className="flex flex-col items-center py-1 mr-[40px]"
         >
           <img 
-            src="/icons/footer/Home.svg"
+            src={`${ICONS_PATH}/Home.svg`}
             alt="home" 
             className={`w-6 h-6 ${
               activeTab === 'home' 
@@ -28,7 +30,7 @@ const BottomNavigation: React.FC = () => {
           className="flex flex-col items-center py-1  mr-[45px]"
         >
           <img 
-            src="/icons/footer/Poizon.svg" 
+            src={`${ICONS_PATH}/Poizon.svg`} 
             alt="Poizon" 
             className={`w-4 h-6 ${
               activeTab === 'poizon' 
@@ -43,7 +45,7 @@ const BottomNavigation: React.FC = () => {
           className="flex flex-col items-center py-1 pt-[6px] mr-[44px]"
         >
           <img
-            src="/icons/footer/Search.svg" 
+            src={`${ICONS_PATH}/Search.svg`} 
             style={{ width: '32px', height: '18px'}}
             alt="Search" 
             className={`w-6 h-6 ${
@@ -59,7 +61,7 @@ const BottomNavigation: React.FC = () => {
           className="flex flex-col items-center py-1 pt-[5px]  mr-[48px]"
         >
           <img 
-            src="/icons/footer/Heart.svg" 
+            src={`${ICONS_PATH}/Heart.svg`} 
              style={{  height: '20px'}}
             alt="heart" 
             className={`w-5 h-6 ${
@@ -75,7 +77,7 @@ const BottomNavigation: React.FC = () => {
           className="flex flex-col items-center py-1  mr-[47px]"
         >
           <img 
-            src="/icons/footer/Trach.svg" 
+            src={`${ICONS_PATH}/Trach.svg`} 
             alt="trach" 
             className={`w-5 h-6 ${
               activeTab === 'trash' 
@@ -90,7 +92,7 @@ const BottomNavigation: React.FC = () => {
           className="flex flex-col items-center py-1"
         >
           <img 
-            src="/icons/footer/User.svg" 
+            src={`${ICONS_PATH}/User.svg`} 
             alt="user" 
             className={`w-5 h-6 ${
               activeTab === 'user' 
