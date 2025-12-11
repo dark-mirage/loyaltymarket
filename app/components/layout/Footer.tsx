@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 
+
 const BottomNavigation: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
 
@@ -74,8 +75,8 @@ const BottomNavigation: React.FC = () => {
           className="flex flex-col items-center py-1  mr-[47px]"
         >
           <img 
-            src="/icons/footer/trach.svg" 
-            alt="trash" 
+            src="/icons/footer/Trach.svg" 
+            alt="trach" 
             className={`w-5 h-6 ${
               activeTab === 'trash' 
                 ? 'filter brightness-0'
