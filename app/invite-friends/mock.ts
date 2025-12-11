@@ -1,8 +1,8 @@
 //TODO:Удалить после подключения бэкенда
 export const stats = {
     visited: 1000,
-    started: 850,
-    promocodes: 720,
+    started: 1000,
+    promocodes: 1000,
   };
 
   export const invitedUsers = [

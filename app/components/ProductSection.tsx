@@ -18,12 +18,12 @@ const ProductSection: React.FC<ProductSectionProps> = ({
 }) => {
   if (layout === 'horizontal') {
     return (
-      <section className="px-4 py-4 pt-[13px] pl-[16px] pb-[12px] pr-[0]">
-        <div className="flex items-center justify-between mb-[15px]">
+      <section className="px-4 py-4 pt-[7px] pl-[16px] pb-[12px] pr-[0] bg-white">
+        <div className="flex items-center justify-between mb-[15px] pr-[15px]">
           <h2 className="text-[20px] font-semibold">{title}</h2>
-          <button className=" text-[#7E7E7E] flex items-center justify-center gap-1 font-medium">
+          <button className=" text-[#7E7E7E] flex items-center justify-center  font-medium">
             <span className='text-[15px]'>все</span>
-            <img className="w-[10px] h-[16px]" src="/icons/global/arrow.svg" alt="arrow" />
+            <img className="w-[10px] h-[12px]" src="/icons/global/arrow.svg" alt="arrow" />
           </button>
         </div>
         <div className="relative">
@@ -43,8 +43,8 @@ const ProductSection: React.FC<ProductSectionProps> = ({
   }
 
   return (
-    <section className="px-4 py-4 pt-[0]">
-      <div className="flex items-center justify-between mb-[13px]">
+    <section className="px-4 py-4 pt-[0] bg-white">
+      <div className="flex items-center justify-between mb-[12px]">
         <h2 className="text-[21px] font-semibold">{title}</h2>
       </div>
       <div className="grid grid-cols-2 gap-3 gap-y-[21px]">

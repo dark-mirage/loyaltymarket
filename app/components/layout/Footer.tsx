@@ -6,10 +6,10 @@ const BottomNavigation: React.FC = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t">
-      <div className="flex justify-around py-2 pb-[38px]">
+      <div className="flex py-2 pb-[40px] pl-[23px]">
         <button
           onClick={() => setActiveTab('home')}
-          className="flex flex-col items-center gap-1 px-4 py-1"
+          className="flex flex-col items-center py-1 mr-[40px]"
         >
           <img 
             src="/icons/footer/Home.svg" 
@@ -24,7 +24,7 @@ const BottomNavigation: React.FC = () => {
         
         <button
           onClick={() => setActiveTab('poizon')}
-          className="flex flex-col items-center gap-1 px-4 py-1"
+          className="flex flex-col items-center py-1  mr-[45px]"
         >
           <img 
             src="/icons/footer/Poizon.svg" 
@@ -39,10 +39,11 @@ const BottomNavigation: React.FC = () => {
         
         <button
           onClick={() => setActiveTab('search')}
-          className="flex flex-col items-center gap-1 px-4 py-1"
+          className="flex flex-col items-center py-1 pt-[6px] mr-[44px]"
         >
-          <img 
+          <img
             src="/icons/footer/Search.svg" 
+            style={{ width: '32px', height: '18px'}}
             alt="Search" 
             className={`w-6 h-6 ${
               activeTab === 'search' 
@@ -51,13 +52,14 @@ const BottomNavigation: React.FC = () => {
             }`}
           />
         </button>
-        
+
         <button
           onClick={() => setActiveTab('heart')}
-          className="flex flex-col items-center gap-1 px-4 py-1"
+          className="flex flex-col items-center py-1 pt-[5px]  mr-[48px]"
         >
           <img 
             src="/icons/footer/Heart.svg" 
+             style={{  height: '20px'}}
             alt="heart" 
             className={`w-5 h-6 ${
               activeTab === 'heart' 
@@ -69,7 +71,7 @@ const BottomNavigation: React.FC = () => {
         
         <button
           onClick={() => setActiveTab('trash')}
-          className="flex flex-col items-center gap-1 px-4 py-1"
+          className="flex flex-col items-center py-1  mr-[47px]"
         >
           <img 
             src="/icons/footer/trach.svg" 
@@ -84,7 +86,7 @@ const BottomNavigation: React.FC = () => {
         
         <button
           onClick={() => setActiveTab('user')}
-          className="flex flex-col items-center gap-1 px-4 py-1"
+          className="flex flex-col items-center py-1"
         >
           <img 
             src="/icons/footer/User.svg" 

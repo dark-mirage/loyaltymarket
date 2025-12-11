@@ -8,13 +8,18 @@ interface Props {
   variant?: ProductCardVariant;
 }
 
+
 const ProductCard: React.FC<Props> = ({ product, onToggleFavorite, variant = 'normal' }) => {
   const widthClass = variant === 'compact' ? 'w-[143px]' : 'w-[180px]';
+  const imageMbClass = variant === 'compact' ? 'mb-[15px]' : 'mb-[5px]';
   
   return (
     <div className={`${widthClass} flex-shrink-0`}>
-      <div className="relative bg-gray-100 rounded-xl overflow-hidden mb-[15px]" style={{ aspectRatio: '3/4' }}>
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div
+          className={`relative bg-gray-100 rounded-xl overflow-hidden ${imageMbClass}`}
+          style={{ aspectRatio: '3/4' }}
+        >
+          <div className="absolute inset-0 flex items-center justify-center">
           {typeof product.image === 'string' && /\.(png|jpe?g|svg|webp|avif)$/i.test(product.image) ? (
             <img src={product.image} alt={product.name} className="w-full h-full object-cover rounded-xl bg-[var(--items-background)]" />
           ) : (
@@ -23,7 +28,7 @@ const ProductCard: React.FC<Props> = ({ product, onToggleFavorite, variant = 'no
         </div>
         <button
           onClick={() => onToggleFavorite(product.id)}
-          className="absolute top-[5px] right-[8px] w-[24px] h-[20px] rounded-full flex items-center justify-center"
+          className="absolute top-[6px] right-[8px] w-[24px] h-[20px] rounded-full flex items-center justify-center"
           aria-pressed={product.isFavorite}
         >
           <img
@@ -32,10 +37,19 @@ const ProductCard: React.FC<Props> = ({ product, onToggleFavorite, variant = 'no
             className="w-[23px] h-[23px] bg-[rgba(244,243,241,1)]"
           />
         </button>
-      </div>
+
+        </div>
+            {variant === 'normal' && (
+          <img
+            className="mb-[6px]"
+            src="/icons/product/dots-mini-slider.svg"
+            alt="dots"
+          />
+        )}
+      
       
       <div className='pl-[4px]'>
-        <div className="text-sm font-semibold mb-[6px] font-inter font-semibold text-[16px] leading-[100%] tracking-[-0.04em]">
+        <div className="text-sm mb-[4px] text-[18px] leading-[100%] tracking-[-0.04em]">
           {product.price} 
         </div>
         
