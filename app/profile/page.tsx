@@ -151,7 +151,7 @@ export default function ProfilePage() {
               {
                 text: 'Просмотренное',
                 icon: <ViewedIcon />,
-                href: '/viewed',
+                href: '/profile/viewed',
                 fontWeight: 500,
               },
             ]}

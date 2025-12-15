@@ -4,11 +4,11 @@ import ProductCard from './ProductCard'
 import { Product } from './types'
 
 interface ProductSectionProps {
-  title: string
+  title?: string
   products: Product[]
   onToggleFavorite: (id: number) => void
   layout?: 'horizontal' | 'grid' // Меняем на horizontal для ручного скролла
-  showDeliveryButton?: boolean
+  hideFavoriteButton?: boolean
 }
 
 const ProductSection: React.FC<ProductSectionProps> = ({
@@ -16,7 +16,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
   products,
   onToggleFavorite,
   layout = 'grid',
-  showDeliveryButton = false
+  hideFavoriteButton = false
 }) => {
   if (layout === 'horizontal') {
     return (
@@ -36,7 +36,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                 product={product}
                 onToggleFavorite={onToggleFavorite}
                 variant="compact"
-                showDeliveryButton={showDeliveryButton}
+                hideFavoriteButton={hideFavoriteButton}
               />
             ))}
           </div>
@@ -57,7 +57,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
             product={product}
             onToggleFavorite={onToggleFavorite}
             variant="normal"
-            showDeliveryButton={showDeliveryButton}
+            hideFavoriteButton={hideFavoriteButton}
           />
         ))}
       </div>

@@ -6,11 +6,11 @@ interface Props {
   product: Product;
   onToggleFavorite: (id: number) => void;
   variant?: ProductCardVariant;
-  showDeliveryButton?: boolean;
+  hideFavoriteButton?: boolean;
 }
 
 
-const ProductCard: React.FC<Props> = ({ product, onToggleFavorite, variant = 'normal', showDeliveryButton = false }) => {
+const ProductCard: React.FC<Props> = ({ product, onToggleFavorite, variant = 'normal', hideFavoriteButton = false }) => {
   const widthClass = variant === 'compact' ? 'w-[143px]' : 'w-[180px]';
   const imageMbClass = variant === 'compact' ? 'mb-[15px]' : 'mb-[5px]';
   
@@ -27,17 +27,31 @@ const ProductCard: React.FC<Props> = ({ product, onToggleFavorite, variant = 'no
             <div className="text-4xl">{product.image}</div>
           )}
         </div>
-        <button
-          onClick={() => onToggleFavorite(product.id)}
-          className="absolute top-[6px] right-[8px] w-[24px] h-[20px] rounded-full flex items-center justify-center"
-          aria-pressed={product.isFavorite}
-        >
-          <img
-            src={product.isFavorite ? '/icons/global/active-heart.svg' : '/icons/global/not-active-heart.svg'}
-            alt={product.isFavorite ? 'liked' : 'not liked'}
-            className="w-[23px] h-[23px] bg-[rgba(244,243,241,1)]"
-          />
-        </button>
+        {!hideFavoriteButton ? (
+          <button
+            onClick={() => onToggleFavorite(product.id)}
+            className="absolute top-[6px] right-[8px] w-[24px] h-[20px] rounded-full flex items-center justify-center"
+            aria-pressed={product.isFavorite}
+          >
+            <img
+              src={product.isFavorite ? '/icons/global/active-heart.svg' : '/icons/global/not-active-heart.svg'}
+              alt={product.isFavorite ? 'liked' : 'not liked'}
+              className="w-[23px] h-[23px] bg-[rgba(244,243,241,1)]"
+            />
+          </button>
+        ) : (
+          <button
+            onClick={() => onToggleFavorite(product.id)}
+            className="absolute top-[6px] right-[8px] w-[24px] h-[20px] rounded-full flex items-center justify-center"
+            aria-label="Добавить в избранное"
+          >
+            <img
+              src="/icons/global/not-active-heart.svg"
+              alt="Добавить в избранное"
+              className="w-[23px] h-[23px] bg-[rgba(244,243,241,1)]"
+            />
+          </button>
+        )}
 
         </div>
             {variant === 'normal' && (
@@ -56,22 +70,10 @@ const ProductCard: React.FC<Props> = ({ product, onToggleFavorite, variant = 'no
         <div className="text-[12px] line-clamp-2 text-black font-inter font-normal text-[12px] leading-[120%] tracking-[0] mb-[7px]">
           {product.name}
         </div>
-
-          {product.size && (
-        <div className="flex gap-[5px] text-xs text-black font-inter font-semibold text-[11px] leading-[106%] tracking-[0]">
-          <img src="/icons/global/gray-dot.svg" alt="dot" />
-          {product.size},
-          {(product.country || product.pickupPoint) && (
-            <span className="text-gray-400 font-normal">
-               {product.country || product.pickupPoint}
-            </span>
-          )}
-        </div>
-      )}
       </div>
 
       {/* Кнопка даты доставки */}
-      {showDeliveryButton && product.deliveryDate && (
+      {product.deliveryDate && (
         <button className="w-full h-[40px] bg-[#F4F3F1] rounded-2xl flex items-center justify-center mt-2">
           <span className="text-[13px] font-semibold leading-[1.06em] tracking-[0.02em] text-black">
             {product.deliveryDate}

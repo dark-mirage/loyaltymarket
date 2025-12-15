@@ -29,7 +29,7 @@ export default function BrandCard({
 
       {/* Текст бренда */}
       <div className="absolute left-[63px] top-[14px] flex flex-col gap-0">
-        <span className="text-[13px] font-semibold leading-[1.06em] tracking-[0.01em] uppercase text-black">
+        <span className="text-[13px] font-semibold leading-[1.06em] tracking-[0.01em] text-black">
           {name}
         </span>
         <span className="text-[13px] font-normal leading-[1.21em] tracking-[0.01em] text-[#7E7E7E]">

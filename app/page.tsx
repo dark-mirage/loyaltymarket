@@ -16,8 +16,7 @@ export default function Home() {
       price: '112 490 ₽',
       image: '/products/shoes-1.png',
       isFavorite: false,
-      size: 'с 30 мар',
-      country: "из Китая"
+      deliveryDate: '30 марта',
     },
     {
       id: 2, 
@@ -25,8 +24,7 @@ export default function Home() {
       price: '12 990 ₽', 
       image: '/products/t-shirt-1.png', 
       isFavorite: true,
-      size: 'от 2 дней',
-      country: "из наличия"
+      deliveryDate: 'Послезавтра',
     },
     {
       id: 3, 
@@ -34,8 +32,7 @@ export default function Home() {
       price: '2 890 ₽', 
       image: '/products/t-shirt-2.png', 
       isFavorite: false, 
-      size: 'C 30 мар',
-      pickupPoint: "из наличия"
+      deliveryDate: '30 марта',
     },
     { 
       id: 8, 
@@ -43,8 +40,7 @@ export default function Home() {
       price: '8 990 ₽', 
       image: '/products/t-shirt-2.png', 
       isFavorite: false, 
-      size: 'С 30 мар',
-      pickupPoint: "из наличия"
+      deliveryDate: 'Послезавтра',
     },
     { 
       id: 9, 
@@ -52,8 +48,7 @@ export default function Home() {
       price: '15 990 ₽', 
       image: '/products/t-shirt-2.png', 
       isFavorite: true,
-      size: 'С 30 мар',
-      pickupPoint: "из наличия"
+      deliveryDate: '30 марта',
     },
   ]);
 
@@ -64,8 +59,7 @@ export default function Home() {
       price: '2 890 ₽', 
       image: '/products/t-shirt-1.png', 
       isFavorite: false, 
-      size: 'От 2 дней',
-      pickupPoint: "из наличия"
+      deliveryDate: 'Послезавтра',
     },
     { 
       id: 5, 
@@ -73,8 +67,7 @@ export default function Home() {
       price: '112 490 ₽', 
       image: '/products/shoes-1.png', 
       isFavorite: true, 
-      size: 'С 30 мар',
-      country: 'из Китая'
+      deliveryDate: '30 марта',
     },
     { 
       id: 6, 
@@ -82,8 +75,7 @@ export default function Home() {
       price: '2 890 ₽', 
       image: '/products/t-shirt-2.png', 
       isFavorite: false, 
-      size: 'С 30 мар',
-      country: 'из Китая'
+      deliveryDate: '30 марта',
     },
     { 
       id: 7, 
@@ -91,8 +83,7 @@ export default function Home() {
       price: '12 990 ₽', 
       image: '/products/shoes-2.png', 
       isFavorite: true, 
-      size: 'От 2 дней',
-      pickupPoint: "из наличия"
+      deliveryDate: 'Послезавтра',
     },
   ]);
 

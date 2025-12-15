@@ -17,9 +17,15 @@ interface BrandsSectionProps {
 export default function BrandsSection({ brands, onToggleFavorite }: BrandsSectionProps) {
   return (
     <div className="bg-white rounded-t-[25px] px-4 py-[19px]">
-      <h2 className="text-[20px] font-semibold leading-[1.06em] tracking-[-0.01em] uppercase text-black mb-[12px]">
+      <div className="flex items-center  justify-between mb-[12px]">
+      <h2 className="text-[20px] font-semibold leading-[1.06em] tracking-[-0.01em] text-black ">
         Бренды
       </h2>
+      <span className="flex items-center gap-1 text-[15px] font-medium leading-[1.06em] tracking-[-0.01em] text-black">
+        все 
+        <img className="w-[10px] h-[12px]" src="/icons/global/arrow.svg" alt="arrow" />
+      </span>
+      </div>
       <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
         {brands.map((brand) => (
           <BrandCard

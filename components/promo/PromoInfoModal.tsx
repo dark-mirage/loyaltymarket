@@ -60,14 +60,14 @@ export default function PromoInfoModal({ open, onClose }: PromoInfoModalProps) {
 
           <div className="mt-4 space-y-5 text-[15px] leading-[1.21em] text-black">
             <section className="space-y-2">
-              <p className="text-[15px] font-medium uppercase tracking-[0.01em]">КАК ПОЛУЧИТЬ?</p>
+              <p className="text-[15px] font-medium tracking-[0.01em]">КАК ПОЛУЧИТЬ?</p>
               <p className="text-[#7E7E7E]">
                 За каждый завершённый заказ начисляется 200 баллов.
               </p>
             </section>
 
             <section className="space-y-2">
-              <p className="text-[15px] font-medium uppercase tracking-[0.01em]">КАК ПОТРАТИТЬ?</p>
+              <p className="text-[15px] font-medium tracking-[0.01em]">КАК ПОТРАТИТЬ?</p>
               <p className="text-[#7E7E7E]">
                 Баллами можно оплачивать часть заказа: до 10% на стартовом уровне,
                 до 15% на продвинутом и до 20% на премиум.
@@ -75,16 +75,16 @@ export default function PromoInfoModal({ open, onClose }: PromoInfoModalProps) {
             </section>
 
             <section className="space-y-2">
-              <p className="text-[20px] font-bold uppercase tracking-[-0.01em]">подарочные баллы</p>
+              <p className="text-[20px] font-bold tracking-[-0.01em]">подарочные баллы</p>
               <div className="space-y-2">
-                <p className="text-[15px] font-medium uppercase tracking-[0.01em]">КАК ПОЛУЧИТЬ?</p>
+                <p className="text-[15px] font-medium tracking-[0.01em]">КАК ПОЛУЧИТЬ?</p>
                 <p className="text-[#7E7E7E]">
                   Подарочные баллы начисляются при активации подарочной карты,
                   полученной от другого пользователя.
                 </p>
               </div>
               <div className="space-y-2">
-                <p className="text-[15px] font-medium uppercase tracking-[0.01em]">КАК ПОТРАТИТЬ?</p>
+                <p className="text-[15px] font-medium tracking-[0.01em]">КАК ПОТРАТИТЬ?</p>
                 <p className="text-[#7E7E7E]">
                   Подарочными баллами можно оплачивать до 100% стоимости заказа.
                   При их наличии они списываются первыми, пока не израсходуются полностью.

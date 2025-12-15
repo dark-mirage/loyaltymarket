@@ -30,7 +30,7 @@ export default function FavoritesPage() {
     },
     {
       id: 3,
-      name: 'Stonik',
+      name: 'Stone Island',
       image: 'icons/favourites/brands/stone-island.svg',
       isFavorite: true,
     },
@@ -71,6 +71,37 @@ export default function FavoritesPage() {
     },
   ]);
 
+  const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([
+    {
+      id: 5,
+      name: 'Куртка The North Face',
+      price: '15 990 ₽',
+      image: '/products/t-shirt-1.png',
+      isFavorite: false,
+    },
+    {
+      id: 6,
+      name: 'Джинсы Levi\'s 501',
+      price: '8 990 ₽',
+      image: '/products/shoes-1.png',
+      isFavorite: false,
+    },
+    {
+      id: 7,
+      name: 'Рюкзак Herschel',
+      price: '4 590 ₽',
+      image: '/products/t-shirt-2.png',
+      isFavorite: false,
+    },
+    {
+      id: 8,
+      name: 'Кроссовки New Balance',
+      price: '9 990 ₽',
+      image: '/products/shoes-2.png',
+      isFavorite: false,
+    },
+  ]);
+
   const handleToggleBrandFavorite = (id: number) => {
     setBrands(brands.map(brand => 
       brand.id === id ? { ...brand, isFavorite: !brand.isFavorite } : brand
@@ -78,9 +109,19 @@ export default function FavoritesPage() {
   };
 
   const handleToggleProductFavorite = (id: number) => {
-    setProducts(products.map(product => 
-      product.id === id ? { ...product, isFavorite: !product.isFavorite } : product
-    ).filter(product => product.isFavorite));
+    // Проверяем, есть ли товар в избранных
+    const favoriteProduct = products.find(p => p.id === id);
+    if (favoriteProduct) {
+      // Если товар в избранных, удаляем его
+      setProducts(products.filter(product => product.id !== id));
+    } else {
+      // Если товар в рекомендуемых, перемещаем в избранные
+      const recommendedProduct = recommendedProducts.find(p => p.id === id);
+      if (recommendedProduct) {
+        setRecommendedProducts(recommendedProducts.filter(product => product.id !== id));
+        setProducts([...products, { ...recommendedProduct, isFavorite: true, deliveryDate: 'Послезавтра' }]);
+      }
+    }
   };
 
   const hasFavorites = products.length > 0 || brands.some(b => b.isFavorite);
@@ -106,16 +147,21 @@ export default function FavoritesPage() {
             {products.length > 0 && (
               <div className="bg-white rounded-t-[25px] mt-2">
                 <ProductSection
-                  title="Для вас"
                   products={products}
                   onToggleFavorite={handleToggleProductFavorite}
                   layout="grid"
-                  showDeliveryButton={true}
                 />
               </div>
             )}
           </>
         )}
+        <ProductSection
+          title="Для вас"
+          products={recommendedProducts}
+          onToggleFavorite={handleToggleProductFavorite}
+          layout="grid"
+          hideFavoriteButton={true}
+        />
       </main>
       <Footer />
     </>
