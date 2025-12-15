@@ -1,6 +1,7 @@
 'use client'
 import React from 'react';
 import BrandCard from './BrandCard';
+import Link from 'next/link';
 
 interface Brand {
   id: number;
@@ -21,10 +22,13 @@ export default function BrandsSection({ brands, onToggleFavorite }: BrandsSectio
       <h2 className="text-[20px] font-semibold leading-[1.06em] tracking-[-0.01em] text-black ">
         Бренды
       </h2>
-      <span className="flex items-center gap-1 text-[15px] font-medium leading-[1.06em] tracking-[-0.01em] text-black">
-        все 
-        <img className="w-[10px] h-[12px]" src="/icons/global/arrow.svg" alt="arrow" />
-      </span>
+
+      <Link href="/favorites/brands">
+        <span className="flex items-center gap-1 text-[15px] font-medium leading-[1.06em] tracking-[-0.01em] text-black">
+          все 
+          <img className=" w-[10px] h-[12px]" src="/icons/global/arrow.svg" alt="arrow" />
+        </span>
+        </Link>
       </div>
       <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
         {brands.map((brand) => (

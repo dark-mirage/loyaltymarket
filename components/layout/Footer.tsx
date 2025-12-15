@@ -6,11 +6,16 @@ const BottomNavigation: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
   // Базовый путь к иконкам — поправьте здесь, если иконки лежат не в public/icons/footer
   const ICONS_PATH = '/icons/footer';
+  const HomeIcon = '/icons/footer/Home.svg';
+  const PoizonIcon = '/icons/footer/Poizon.svg';
+  const SearchIcon = '/icons/footer/Search.svg';
+  const HeartIcon = '/icons/footer/Heart.svg';
+  const TrashIcon = '/icons/footer/Trach.svg';
+  const UserIcon = '/icons/footer/User.svg';
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t">
       <div className="flex py-2 pb-[40px] justify-center">
-       
        
       <Link href="/">
         <button
@@ -18,7 +23,7 @@ const BottomNavigation: React.FC = () => {
           className="flex flex-col items-center py-1 mr-[40px]"
         >
           <img 
-            src={`${ICONS_PATH}/Home.svg`}
+            src={HomeIcon}
             alt="home" 
             className={`w-6 h-6 ${
               activeTab === 'home' 
