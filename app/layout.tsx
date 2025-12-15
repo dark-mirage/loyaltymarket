@@ -16,7 +16,6 @@ export default function RootLayout({
       <body className={cn(
         // inter.className,
         "font-[Inter,sans-serif] !text-black box-border")}>
-        <div className="pt-15"></div>
         {children}
       </body>
     </html>

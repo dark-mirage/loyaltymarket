@@ -1,9 +1,18 @@
 @import "tailwindcss";
 
+/* Подключение шрифта Inter */
 @font-face {
   font-family: 'Inter';
-  src: url('/font/inter/inter-v20-latin-700.woff2') format('woff2');
-  font-weight: 700;
+  src: url('/fonts/inter/inter-v20-latin-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter/inter-v20-latin-500.woff2') format('woff2');
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
@@ -18,45 +27,33 @@
 
 @font-face {
   font-family: 'Inter';
-  src: url('/font/inter/inter-v20-latin-500.woff2') format('woff2');
-  font-weight: 500;
+  src: url('/fonts/inter/inter-v20-latin-700.woff2') format('woff2');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Inter';
-  src: url('/font/inter/inter-v20-latin-regular.woff2') format('woff2');
-  font-weight: 400;
+  font-family: 'BebasNeue';
+  src: url('/fonts/BebasNeueBold/BebasNeueBold.woff2') format('woff2');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
-.text-400 {
-  font-family: 'Inter', sans-serif;
-  font-weight: 400;
+* {
+  box-sizing: border-box;
 }
 
-.text-500 {
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
+.font-bebas {
+  font-family: 'BebasNeue';
 }
-
-.text-600 {
-  font-family: 'Inter';
-  font-weight: 600;
-}
-
-.text-700 {
-  font-family: 'Inter';
-  font-weight: 700;
-}
-
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
   --items-background: #F4F3F1;
+  font-family: 'Inter', sans-serif; /* Добавляем здесь */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -68,14 +65,10 @@
 }
 
 body {
-  /* background: var(--background); */
-  /* color: var(--foreground); */
-  font-family: 'Inter', Arial, Helvetica, sans-serif;
-  font-weight: 500;
-
+  font-family: inherit;
 }
 
-/* Hide horizontal scrollbar for elements with .no-scrollbar */
+/* Остальные стили без изменений */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -106,3 +99,14 @@ body {
   display: none;
 }
 
+/* Заменено: убрал ссылку на bg/promo-bg.jpg и public/bg/... на корректный путь от корня */
+.bg-\[url\(\'\/bg\/promo-bg\.png\'\)\] {
+  background-image: url('/bg/promo-bg.png');
+}
+
+/* Если ранее была запись с public/... — удалить/заменить её */
+.bg-\[url\(\'public\/bg\/promo-bg\.png\'\)\] {
+  background-image: url('/bg/promo-bg.png');
+}
+
+/* Удалить или игнорировать правило с jpg, если оно больше не используется */

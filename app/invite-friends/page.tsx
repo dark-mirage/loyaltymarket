@@ -1,51 +1,53 @@
 import Link from "next/link";
-import Footer from "../components/layout/Footer";
+import Footer from "../../components/layout/Footer";
 import { X, Check, Minus } from "lucide-react";
 import Image from "next/image";
 import { ReactNode } from "react";
 import { invitedUsers, stats } from "./mock";
 import { cn } from "../shared";
+import Container from "../../components/layout/Layout";
+import Header from "../../components/layout/Header";
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    name: "Зовите друзей и получайте скидку",
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Зовите друзей и получайте скидку",
+  description:
+    "Пригласите друзей и получите скидку. Уникальная ссылка для приглашения в приложение.",
+  mainEntity: {
+    "@type": "Offer",
+    name: "Скидка за приглашение друзей",
     description:
-      "Пригласите друзей и получите скидку. Уникальная ссылка для приглашения в приложение.",
-    mainEntity: {
-      "@type": "Offer",
-      name: "Скидка за приглашение друзей",
-      description:
-        "Пригласите 3 друзей в приложение и получите промокод на скидку 10%",
-      eligibleQuantity: {
-        "@type": "QuantitativeValue",
-        value: 3,
-        unitText: "друзья",
-      },
-      price: "0",
-      priceCurrency: "RUB",
+      "Пригласите 3 друзей в приложение и получите промокод на скидку 10%",
+    eligibleQuantity: {
+      "@type": "QuantitativeValue",
+      value: 3,
+      unitText: "друзья",
     },
-    interactionStatistic: [
-      {
-        "@type": "InteractionCounter",
-        interactionType: "https://schema.org/ClickAction",
-        name: "Переходы по ссылке",
-        userInteractionCount: stats.visited,
-      },
-      {
-        "@type": "InteractionCounter",
-        interactionType: "https://schema.org/ActivateAction",
-        name: "Запуски приложения",
-        userInteractionCount: stats.started,
-      },
-      {
-        "@type": "InteractionCounter",
-        interactionType: "https://schema.org/ReceiveAction",
-        name: "Полученные промокоды",
-        userInteractionCount: stats.promocodes,
-      },
-    ],
-  };
+    price: "0",
+    priceCurrency: "RUB",
+  },
+  interactionStatistic: [
+    {
+      "@type": "InteractionCounter",
+      interactionType: "https://schema.org/ClickAction",
+      name: "Переходы по ссылке",
+      userInteractionCount: stats.visited,
+    },
+    {
+      "@type": "InteractionCounter",
+      interactionType: "https://schema.org/ActivateAction",
+      name: "Запуски приложения",
+      userInteractionCount: stats.started,
+    },
+    {
+      "@type": "InteractionCounter",
+      interactionType: "https://schema.org/ReceiveAction",
+      name: "Полученные промокоды",
+      userInteractionCount: stats.promocodes,
+    },
+  ],
+};
 
 export default function InviteFriends() {
   return (
@@ -59,38 +61,51 @@ export default function InviteFriends() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <Container>
-        <header className="flex items-center justify-between mb-2">
-          <Link
-            href="/"
-            aria-label="Закрыть страницу"
-            className="flex items-center gap-0.5 bg-[#413F4066] text-white text-sm font-medium rounded-2xl py-1 px-3 pl-0.5"
-          >
-            <X aria-hidden="true" /> Закрыть
-          </Link>
+      <Header title="Зовите друзей"></Header>
 
-          <h2
-            className="pr-4 text-center text-[0.9375rem] font-medium"
-            itemProp="headline"
-          >
-            Зовите друзей
-          </h2>
+      {/* Иконки приглашений: 3 слева, 3 справа, 1 по центру */}
+      <div className="relative h-20 mb-40 pointer-events-none ">
+        {/* Левый столбец: первые три слева */}
+        <img
+          src="/icons/invite-friends/1-avatar.svg"
+          alt=""
+          className="absolute left-22 top-2 w-[51px] h-[51px]"
+        />
+        <img
+          src="/icons/invite-friends/2-avatar.svg"
+          alt=""
+          className="absolute left-12 top-20 w-[50px] h-[50px]"
+        />
+        <img
+          src="/icons/invite-friends/3-avatar.svg"
+          alt=""
+          className="absolute left-23 top-38 w-[54px] h-[53px]"
+        />
 
-          <div
-            aria-hidden="true"
-            className="bg-[#413F4066] w-20 h-8 rounded-2xl"
-          />
-        </header>
-      </Container>
+        {/* Правый столбец: 4-5-6 справа */}
+        <img
+          src="/icons/invite-friends/4-avatar.svg"
+          alt=""
+          className="absolute right-20 top-5 w-[50px] h-[50px]"
+        />
+        <img
+          src="/icons/invite-friends/5-avatar.svg"
+          alt=""
+          className="absolute right-12 top-24 w-[55px] h-[55px]"
+        />
+        <img
+          src="/icons/invite-friends/6-avatar.svg"
+          alt=""
+          className="absolute right-25 top-39 w-[50px] h-[50px]"
+        />
 
-      <Image
-        src="/img/invite-friends.png"
-        width={402}
-        height={241}
-        alt="Иллюстрация с друзьями и подарком за приглашение"
-        priority
-        itemProp="image"
-      />
+        {/* Центр: 7 */}
+        <img
+          src="/icons/invite-friends/7-avatar.svg"
+          alt=""
+          className="absolute left-1/2 transform -translate-x-1/2 top-13 w-[100px] h-[100px]"
+        />
+      </div>
 
       <Container>
         <section>
@@ -103,10 +118,10 @@ export default function InviteFriends() {
           </h1>
 
           <p
-            className="text-base leading-5 mb-6.5"
+            className="text-400 leading-5 mb-6.5"
             itemProp="description"
           >
-            Пригласите в приложение 3 друзей по своей ссылке — и мы подарим вам
+            Пригласите в приложение 3 друзей по своей ссылке и мы подарим вам
             промокод на скидку 10%.
           </p>
         </section>
@@ -128,13 +143,23 @@ export default function InviteFriends() {
           <meta itemProp="priceCurrency" content="RUB" />
 
           <div className="flex flex-col items-center gap-3.25 mb-3">
-            <input
-              type="text"
-              aria-label="Ссылка для приглашения"
-              value="https://t.me/loyaltymarketbot?start=707635394"
-              readOnly
-              className="min-h-13.75 flex-1 w-full p-4.25 rounded-2xl text-[0.9375rem] bg-[#F4F3F1] border-none"
-            />
+          <div className="relative w-full">
+              <input
+                type="text"
+                aria-label="Ссылка для приглашения"
+                value="https://t.me/loyaltymarketbot?start=707635394"
+                readOnly
+                className="min-h-13.75 w-full p-4.25 pr-14 rounded-2xl text-[0.9375rem] bg-[#F4F3F1] border-none"
+              />
+
+              <button
+                type="button"
+                className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center"
+              >
+                <img src="/icons/invite-friends/copy.svg" alt="copy-icon" />
+              </button>
+            </div>
+
 
             <button
               type="button"
@@ -155,24 +180,32 @@ export default function InviteFriends() {
           </h3>
 
           <div className="space-y-1.5">
-            <div className="flex justify-between text-base" itemProp="interactionStatistic">
+            <div
+              className="flex justify-between text-base"
+              itemProp="interactionStatistic"
+            >
               <span>Перешли по ссылке</span>
               <strong>{stats.visited}</strong>
             </div>
 
-            <div className="flex justify-between text-base" itemProp="interactionStatistic">
+            <div
+              className="flex justify-between text-base"
+              itemProp="interactionStatistic"
+            >
               <span>Запустили приложение</span>
               <strong>{stats.started}</strong>
             </div>
 
-            <div className="flex justify-between text-base" itemProp="interactionStatistic">
+            <div
+              className="flex justify-between text-base"
+              itemProp="interactionStatistic"
+            >
               <span>Получено промокодов</span>
               <strong>{stats.promocodes}</strong>
             </div>
           </div>
         </section>
 
-        {/* История приглашений — как UserInteraction */}
         <section aria-labelledby="invite-history" className="mb-10">
           <h3
             id="invite-history"
@@ -237,6 +270,3 @@ export default function InviteFriends() {
   );
 }
 
-const Container = ({ children }: { children: ReactNode }) => {
-  return <div className="px-4">{children}</div>;
-};

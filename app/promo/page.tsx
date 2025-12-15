@@ -1,35 +1,45 @@
+'use client'
+import Header from "../../components/layout/Header"
+import Footer from "../../components/layout/Footer"
+import PointsHistory from "../../components/promo/promo-points"
+import PromoInfoModal from "../../components/promo/PromoInfoModal"
+import { useState } from "react"
 
 export default function PromoPage() {
   // В реальном проекте здесь данные будут приходить с API
+  const [isInfoOpen, setIsInfoOpen] = useState(false)
 
   return (
     <>
-    <div className="mb-[18px]">
-        <div className="px-4 py-3 bg-[#8C8C8C] ">
-        <span className='flex justify-center text-[15px] mb-[49px]'>Баллы</span>
-
-        <div className='flex justify-between mb-[46px]'>
-            <div className='flex flex-col text-[25px] font-bold'>
-                <span className="text-[73px]">600</span>
+    <Header title="Баллы" bgColor="#A8A8A8"  titleColor="white"></Header>
+    <main className="">
+    <section className="mb-[18px] bg-[#A8A8A8] pt-[20px]"> 
+        <div className="px-4 py-3 pb-[18px]">
+        <div className='flex justify-center gap-4 mb-[46px]'>
+            <div className='flex flex-col text-[100px] text-white items-center font-bold'>
+                <span className="text-[73px] font-bold font-bebas">600</span>
                 <span className="text-[15px]">Баллов</span>
             </div>
-            <div className='flex flex-col text-[25px] font-bold'>
-                <span className="text-[73px]">200</span>
+            <div className='flex flex-col text-white font-bold items-center '>
+                <span className="text-[73px] font-bold font-bebas">200</span>
                 <span className="text-[15px]">подарочных баллов</span>
             </div>
         </div>
-
-        <div className="flex bg-white py-[14px] rounded-[16px] px-[20px]">
-            <div>
-                <h3>1 балл = 1 ₽</h3>
-                <span>Как это работает?</span>
-            </div>
-            <img src="/icons/global/arrow.svg" alt="arrow" className="w-3 h-3" />
+        <button
+          type="button"
+          onClick={() => setIsInfoOpen(true)}
+          className="flex w-full py-[14px] rounded-[16px] px-[20px] bg-white items-center justify-between text-left shadow-sm"
+        >
+          <div>
+            <h3 className="text-base font-semibold leading-none">1 балл = 1 ₽</h3>
+            <span className="text-sm text-gray-600">Как это работает?</span>
+          </div>
+          <img src="/icons/global/arrow.svg" alt="arrow" className="w-4 h-4 ml-4" />
+        </button>
         </div>
-        </div>
-    </div>
-    <div className="px-4">
-    <div className="bg-[#F4F3F1] p-4 rounded-[16px]">
+    </section>
+    <section className="px-4">
+    <article className="bg-[#F4F3F1] p-4 mb-[17px] rounded-[16px]">
         <table className="w-full text-sm">
             <thead>
             <tr>
@@ -62,8 +72,12 @@ export default function PromoPage() {
             </tr>
             </tbody>
         </table>
-    </div>
-    </div>
+    </article>
+    </section>
+    <PointsHistory />
+    <PromoInfoModal open={isInfoOpen} onClose={() => setIsInfoOpen(false)} />
+    </main>
+    <Footer></Footer>
     </>
   )
 }

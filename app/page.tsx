@@ -1,11 +1,11 @@
 'use client'
-import Header from './components/layout/Header'
-import SearchBar from './components/SearchBar'
-import CategoryTabs from './components/CategoryTabs'
-import FriendsSection from './components/FriendsSection'
-import ProductSection from './components/ProductSection'
-import Footer from './components/layout/Footer'
-import { Product } from './components/types'
+import Header from '../components/layout/Header'
+import SearchBar from '../components/SearchBar'
+import CategoryTabs from '../components/CategoryTabs'
+import FriendsSection from '../components/FriendsSection'
+import ProductSection from '../components/ProductSection'
+import Footer from '../components/layout/Footer'
+import { Product } from '../components/types'
 import { useState } from 'react'
 
 export default function Home() {
