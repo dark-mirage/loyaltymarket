@@ -111,7 +111,7 @@ export default function BrandsPage() {
         )}
 
         {/* Секция всех брендов */}
-        <div className="bg-white rounded-t-[25px] mt-2 px-4 pt-[19px] mb-[24px]">
+        <div className="bg-white rounded-t-[25px] mt-2 px-4 pt-[19px] pb-[24px]">
           <Link href="/favorites/brands"> 
             <h2 className="text-[20px] font-bold leading-[1.06em] tracking-[-0.01em] text-black mb-[14px]">
               Все

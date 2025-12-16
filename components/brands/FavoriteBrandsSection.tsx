@@ -14,7 +14,7 @@ interface FavoriteBrandsSectionProps {
 
 export default function FavoriteBrandsSection({ brands }: FavoriteBrandsSectionProps) {
   return (
-    <div className="bg-white rounded-t-[25px] px-4 pt-[19px] pb-[24px]">
+    <div className="bg-white rounded-[25px] mt-8 px-4 pt-[19px] pb-[24px]">
       <h2 className="text-[20px] font-bold leading-[1.06em] tracking-[-0.01em] text-black mb-[14px]">
         Избранные
       </h2>
