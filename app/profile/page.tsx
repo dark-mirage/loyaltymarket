@@ -92,7 +92,7 @@ export default function ProfilePage() {
               {
                 text: 'Купленные товары',
                 icon: <BagIcon />,
-                href: '/purchased',
+                href: '/profile/purchased',
                 fontWeight: 500,
               },
               {

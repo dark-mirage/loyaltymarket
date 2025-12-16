@@ -30,7 +30,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
         </div>
         <div className="relative">
           <div className="flex gap-[11px] overflow-x-auto pb-2 scrollbar-hide">
-            {products.map((product) => (
+            {products?.map((product) => (
               <ProductCard 
                 key={product.id}
                 product={product}
@@ -51,7 +51,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
         <h2 className="text-[21px] font-semibold">{title}</h2>
       </div>
       <div className="grid grid-cols-2 gap-3 gap-y-[20px]">
-        {products.map((product) => (
+        {products?.map((product) => (
           <ProductCard
             key={product.id}
             product={product}
