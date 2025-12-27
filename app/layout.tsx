@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
 // import { Inter } from 'next/font/google'
 import "./styles/globals.css";
+import Script from "next/script";
+
 import { cn } from "./shared";
 
 // const inter = Inter({ subsets: ['latin', 'cyrillic', 'cyrillic-ext'], display: 'swap', variable: '--font-inter' });
@@ -12,7 +13,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <head />
+      <head>
+        {/* Telegram WebApp SDK - загружается до интерактивности для корректной инициализации */}
+        <Script 
+          src="https://telegram.org/js/telegram-web-app.js"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body className={cn(
         // inter.className,
         "font-[Inter,sans-serif] !text-black box-border")}>

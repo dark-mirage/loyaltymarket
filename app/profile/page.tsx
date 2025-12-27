@@ -68,7 +68,6 @@ export default function ProfilePage() {
       <Header title="Профиль" />
       <main className="min-h-screen bg-white pb-20">
         <ProfileHeader avatar="/icons/profile/illustration/avatar.svg" name="Evgeny" />
-
         <div className="px-4 mb-4">
           <MenuSection items={[
             {
@@ -92,7 +91,7 @@ export default function ProfilePage() {
               {
                 text: 'Купленные товары',
                 icon: <BagIcon />,
-                href: '/profile/purchased',
+                href: '/profile/orders',
                 fontWeight: 500,
               },
               {
