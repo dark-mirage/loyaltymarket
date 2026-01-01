@@ -43,7 +43,7 @@ export default function ProductInfo({
       )}
 
       {images.length > 1 && (
-        <div className=" py-3 overflow-x-auto scrollbar-hide">
+        <div className="pl-[8px] py-3 overflow-x-auto scrollbar-hide">
           <div className="flex gap-2">
             {images.map((image, index) => (
               <button

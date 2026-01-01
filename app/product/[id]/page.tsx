@@ -1,22 +1,20 @@
 'use client'
 import React, { useState } from 'react'
 import { useParams } from 'next/navigation'
-import Header from '../../../components/layout/Header'
 import Footer from '../../../components/layout/Footer'
 import ProductImageGallery from '../../../components/product/ProductImageGallery'
 import ProductInfo from '../../../components/product/ProductInfo'
-import ProductColors from '../../../components/product/ProductColors'
 import ProductSizes from '../../../components/product/ProductSizes'
 import ProductPrice from '../../../components/product/ProductPrice'
 import ProductDelivery from '../../../components/product/ProductDelivery'
 import ProductAddToCart from '../../../components/product/ProductAddToCart'
+import ProductReviews from '../../../components/product/ProductReviews'
 
 export default function ProductPage() {
   const params = useParams()
   const productId = params?.id as string
 
   const [isFavorite, setIsFavorite] = useState(false)
-  const [selectedColor, setSelectedColor] = useState<string>('#000000')
   const [selectedSize, setSelectedSize] = useState<string | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -27,20 +25,44 @@ export default function ProductPage() {
     '/products/shoes-1.png',
   ]
 
-  const colors = [
-    { name: 'Черный', value: '#000000', available: true },
-    { name: 'Белый', value: '#FFFFFF', available: true },
-    { name: 'Серый', value: '#808080', available: true },
-    { name: 'Красный', value: '#FF0000', available: false },
-  ]
-
   const sizes = ['XS', 'S', 'M', 'L', 'XL']
   const availableSizes = ['XS', 'S', 'M', 'L', 'XL']
+
+  // Данные для отзывов
+  const reviews = [
+    {
+      id: 1,
+      userName: 'Анастасия',
+      avatar: 'https://i.pravatar.cc/150?img=1',
+      date: '21 апреля',
+      rating: 5,
+      productName: 'Кофта Sup...',
+      pros: 'стильно, классика которую можно носить под разный стиль одежды...',
+      cons: 'клей на подошве. ПОшив..',
+    },
+    {
+      id: 2,
+      userName: 'fasffafdfa',
+      avatar: 'https://i.pravatar.cc/150?img=2',
+      date: '21 апреля',
+      rating: 4,
+      pros: 'стильно, классика которую можно носить под разный стиль одежды...',
+      cons: 'их не',
+    },
+  ]
+
+  // Распределение рейтингов (для расчета среднего)
+  const ratingDistribution = {
+    5: 60,
+    4: 20,
+    3: 12,
+    2: 6,
+    1: 2,
+  }
 
   const handleAddToCart = () => {
     console.log('Добавлено в корзину:', {
       productId,
-      color: selectedColor,
       size: selectedSize,
       quantity
     })
@@ -49,7 +71,6 @@ export default function ProductPage() {
   const handleBuyNow = () => {
     console.log('Купить сейчас:', {
       productId,
-      color: selectedColor,
       size: selectedSize,
       quantity
     })
@@ -101,6 +122,13 @@ export default function ProductPage() {
           deliveryDate="30 марта"
           country="из Китая"
           pickupPrice="99₽"
+        />
+
+        {/* Отзывы */}
+        <ProductReviews
+          brandName="Supreme"
+          reviews={reviews}
+          ratingDistribution={ratingDistribution}
         />
 
         {/* Кнопка добавления в корзину (фиксированная внизу на mobile) */}
