@@ -10,6 +10,7 @@ export default function ViewedPage() {
     {
       id: 1,
       name: 'Туфли Prada Monolith Brushed Original Bla...',
+      brand: 'Prada',
       price: '112 490 ₽',
       image: '/products/shoes-1.png',
       isFavorite: false,
@@ -18,6 +19,7 @@ export default function ViewedPage() {
     {
       id: 2,
       name: 'Лонгслив Comme Des Garcons Play',
+      brand: 'Comme Des Garcons',
       price: '12 990 ₽',
       image: '/products/t-shirt-1.png',
       isFavorite: false,
@@ -26,6 +28,7 @@ export default function ViewedPage() {
     {
       id: 3,
       name: 'Футболка Daze',
+      brand: 'Daze',
       price: '2 890 ₽',
       image: '/products/t-shirt-2.png',
       isFavorite: false,
@@ -34,6 +37,7 @@ export default function ViewedPage() {
     {
       id: 4,
       name: 'Футболка Daze',
+      brand: 'Daze',
       price: '8 990 ₽',
       image: '/products/t-shirt-2.png',
       isFavorite: false,
@@ -42,6 +46,7 @@ export default function ViewedPage() {
     {
       id: 5,
       name: 'Куртка зимняя',
+      brand: 'NoName',
       price: '15 990 ₽',
       image: '/products/t-shirt-2.png',
       isFavorite: false,
@@ -50,6 +55,7 @@ export default function ViewedPage() {
     {
       id: 6,
       name: 'Куртка зимняя',
+      brand: 'NoName',
       price: '15 990 ₽',
       image: '/products/t-shirt-2.png',
       isFavorite: false,
