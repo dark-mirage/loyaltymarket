@@ -98,7 +98,7 @@ export default function Home() {
 
   return (
     <div className="max-w-md mx-auto bg-gray-50 min-h-screen pb-20">
-      <Header />
+      {/* <Header /> */}
       <SearchBar />
       <CategoryTabs />
       <FriendsSection />

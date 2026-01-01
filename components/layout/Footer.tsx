@@ -51,17 +51,17 @@ const BottomNavigation: React.FC = () => {
         </button>
         </Link>
         
-        <Link href="/search"> 
+        <Link href="/сatalog"> 
         <button
-          onClick={() => setActiveTab('search')}
+          onClick={() => setActiveTab('catalog')}
           className="flex flex-col items-center py-1 pt-[6px] mr-[44px]"
         >
           <img
             src={`${ICONS_PATH}/Search.svg`} 
             style={{ width: '32px', height: '18px'}}
-            alt="Search" 
+            alt="catalog" 
             className={`w-6 h-6 ${
-              activeTab === 'search' 
+              activeTab === 'catalog' 
                 ? 'filter brightness-0'
                 : 'opacity-60'
             }`}
