@@ -50,7 +50,7 @@ const BottomNavigation: React.FC = () => {
           />
         </button>
         </Link>
-        
+
         <Link href="/сatalog"> 
         <button
           onClick={() => setActiveTab('catalog')}
