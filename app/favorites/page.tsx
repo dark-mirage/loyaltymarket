@@ -40,6 +40,7 @@ export default function FavoritesPage() {
     {
       id: 1,
       name: 'Лонгслив Comme des Garcons Play',
+      brand: 'Comme des Garcons',
       price: '2 890 ₽',
       image: '/products/t-shirt-1.png',
       isFavorite: true,
@@ -48,6 +49,7 @@ export default function FavoritesPage() {
     {
       id: 2,
       name: 'Туфли Prada Monolith Brushed Original Bla...',
+      brand: 'Prada',
       price: '112 490 ₽',
       image: '/products/shoes-1.png',
       isFavorite: true,
@@ -56,6 +58,7 @@ export default function FavoritesPage() {
     {
       id: 3,
       name: 'Футболка Daze',
+      brand: 'Daze',
       price: '2 890 ₽',
       image: '/products/t-shirt-2.png',
       isFavorite: true,
@@ -64,6 +67,7 @@ export default function FavoritesPage() {
     {
       id: 4,
       name: 'Кроссовки Nike Dunk Low',
+      brand: 'Nike',
       price: '12 990 ₽',
       image: '/products/shoes-2.png',
       isFavorite: true,
@@ -75,6 +79,7 @@ export default function FavoritesPage() {
     {
       id: 5,
       name: 'Куртка The North Face',
+      brand: 'The North Face',
       price: '15 990 ₽',
       image: '/products/t-shirt-1.png',
       isFavorite: false,
@@ -82,6 +87,7 @@ export default function FavoritesPage() {
     {
       id: 6,
       name: 'Джинсы Levi\'s 501',
+      brand: 'Levi\'s',
       price: '8 990 ₽',
       image: '/products/shoes-1.png',
       isFavorite: false,
@@ -89,6 +95,7 @@ export default function FavoritesPage() {
     {
       id: 7,
       name: 'Рюкзак Herschel',
+      brand: 'Herschel',
       price: '4 590 ₽',
       image: '/products/t-shirt-2.png',
       isFavorite: false,
@@ -96,6 +103,7 @@ export default function FavoritesPage() {
     {
       id: 8,
       name: 'Кроссовки New Balance',
+      brand: 'New Balance',
       price: '9 990 ₽',
       image: '/products/shoes-2.png',
       isFavorite: false,
