@@ -168,6 +168,9 @@ export default function TrashBasketPage() {
   const discountRub = appliedPromo?.discountRub ?? 0;
   const totalRub = Math.max(0, subtotalRub - discountRub);
 
+  const DELIVERY_TOOLTIP_TEXT =
+    "Стоимость доставки рассчитывается при оформлении заказа и зависит от адреса и способа доставки.";
+
   const recommendedProducts: Product[] = useMemo(
     () => [
       {
@@ -301,9 +304,11 @@ export default function TrashBasketPage() {
                           <div className="text-[14px] font-semibold leading-[1.2em] text-black truncate">
                             {item.name}
                           </div>
-                          <div className="text-[12px] text-[#DD8825] truncate my-1">
-                            {item.shippingText}
-                          </div>
+                          {item.shippingText?.trim() ? (
+                            <div className="text-[12px] text-[#DD8825] truncate my-1">
+                              {item.shippingText}
+                            </div>
+                          ) : null}
                           <div className="mt-1 text-[12px] text-[#7E7E7E]">
                             {item.size ? `Размер: ${item.size}` : null}
                             {item.article
@@ -375,10 +380,11 @@ export default function TrashBasketPage() {
                             onClick={() =>
                               setQuantity(item.id, item.quantity - 1)
                             }
+                            className="text-center text-[18px] text-[#B6B6B6]"
                           >
                             −
                           </button>
-                          <span className="w-7 text-center text-[14px] font-semibold text-black">
+                          <span className="w-7 text-center text-[14px] font-semibold text-[#B6B6B6]">
                             {item.quantity}
                           </span>
                           <button
@@ -386,6 +392,7 @@ export default function TrashBasketPage() {
                             onClick={() =>
                               setQuantity(item.id, item.quantity + 1)
                             }
+                            className="text-center text-[18px] text-[#B6B6B6]"
                           >
                             +
                           </button>
@@ -480,11 +487,25 @@ export default function TrashBasketPage() {
                 <div className="flex items-center justify-between text-[14px] text-black">
                   <span className="flex items-center gap-2">
                     <span>Доставка</span>
-                    <img
-                      src="/icons/global/Info.svg"
-                      alt=""
-                      className="w-[14px] h-[14px]"
-                    />
+                    <span className="relative inline-flex items-center group">
+                      <button
+                        type="button"
+                        aria-label="Информация о доставке"
+                        className="inline-flex items-center justify-center outline-none"
+                      >
+                        <img
+                          src="/icons/global/Info.svg"
+                          alt=""
+                          className="w-[14px] h-[14px]"
+                        />
+                      </button>
+                      <span
+                        role="tooltip"
+                        className="pointer-events-none absolute left-10 top-full z-10 mt-2 w-[240px] -translate-x-1/2 rounded-[12px] bg-[#2D2D2D] px-3 py-2 text-[12px] font-normal leading-[1.2em] text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
+                      >
+                        {DELIVERY_TOOLTIP_TEXT}
+                      </span>
+                    </span>
                   </span>
                   <span>при оформлении</span>
                 </div>

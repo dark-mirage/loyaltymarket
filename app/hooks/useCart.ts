@@ -43,21 +43,15 @@ function safeParseCart(value: string | null): ParsedCartResult {
     );
     if (invalid) return { items: [], invalid: true };
 
-    // Migrate older cache versions: ensure shippingText exists.
+    // Migrate older cache versions: ensure shippingText exists (do not infer).
     const items = (parsed as unknown[]).map((entry) => {
       const x: Record<string, unknown> =
         typeof entry === "object" && entry !== null
           ? (entry as Record<string, unknown>)
           : {};
 
-      const deliveryText =
-        typeof x.deliveryText === "string" ? x.deliveryText : "";
       const shippingText =
-        typeof x.shippingText === "string"
-          ? x.shippingText
-          : deliveryText.includes("из Китая")
-          ? "Доставка из Китая до РФ 0₽"
-          : "";
+        typeof x.shippingText === "string" ? x.shippingText : "";
 
       return {
         ...x,
@@ -88,7 +82,20 @@ export function useCart(seed?: CartItem[]) {
     }
 
     if (fromStorage.length > 0) {
-      setItems(fromStorage);
+      // If storage is missing newer fields, fill from seed when possible.
+      if (seed && seed.length > 0) {
+        const seedById = new Map(seed.map((x) => [x.id, x] as const));
+        const merged = fromStorage.map((x) => {
+          if (x.shippingText && x.shippingText.trim().length > 0) return x;
+          const seedItem = seedById.get(x.id);
+          if (seedItem?.shippingText)
+            return { ...x, shippingText: seedItem.shippingText };
+          return x;
+        });
+        setItems(merged);
+      } else {
+        setItems(fromStorage);
+      }
     } else if (seed && seed.length > 0) {
       setItems(seed);
     }
