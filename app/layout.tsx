@@ -12,17 +12,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru">
+    <html lang="ru" suppressHydrationWarning>
       <head>
         {/* Telegram WebApp SDK - загружается до интерактивности для корректной инициализации */}
-        <Script 
+        <Script
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"
         />
       </head>
-      <body className={cn(
-        // inter.className,
-        "font-[Inter,sans-serif] !text-black box-border")}>
+      <body
+        suppressHydrationWarning
+        className={cn(
+          // inter.className,
+          "font-[Inter,sans-serif] !text-black box-border"
+        )}
+      >
         {children}
       </body>
     </html>

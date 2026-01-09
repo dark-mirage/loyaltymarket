@@ -2,40 +2,40 @@
 
 /* Подключение шрифта Inter */
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/inter/inter-v20-latin-regular.woff2') format('woff2');
+  font-family: "Inter";
+  src: url("/fonts/inter/inter-v20-latin-regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/inter/inter-v20-latin-500.woff2') format('woff2');
+  font-family: "Inter";
+  src: url("/fonts/inter/inter-v20-latin-500.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Inter';
-  src: url('/font/inter/inter-v20-latin-600.woff2') format('woff2');
+  font-family: "Inter";
+  src: url("/fonts/inter/inter-v20-latin-600.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/inter/inter-v20-latin-700.woff2') format('woff2');
+  font-family: "Inter";
+  src: url("/fonts/inter/inter-v20-latin-700.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'BebasNeue';
-  src: url('/fonts/BebasNeueBold/BebasNeueBold.woff2') format('woff2');
+  font-family: "BebasNeue";
+  src: url("/fonts/BebasNeueBold/BebasNeueBold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -46,21 +46,21 @@
 }
 
 .font-bebas {
-  font-family: 'BebasNeue';
+  font-family: "BebasNeue";
 }
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --items-background: #F4F3F1;
-  font-family: 'Inter', sans-serif; /* Добавляем здесь */
+  --items-background: #f4f3f1;
+  font-family: "Inter", sans-serif; /* Добавляем здесь */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
-    --items-background: #F4F3F1;
+    --items-background: #f4f3f1;
   }
 }
 
@@ -73,8 +73,8 @@ body {
   display: none;
 }
 .no-scrollbar {
-  -ms-overflow-style: none; 
-  scrollbar-width: none; 
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 @keyframes infinite-scroll {
@@ -101,12 +101,12 @@ body {
 
 /* Заменено: убрал ссылку на bg/promo-bg.jpg и public/bg/... на корректный путь от корня */
 .bg-\[url\(\'\/bg\/promo-bg\.png\'\)\] {
-  background-image: url('/bg/promo-bg.png');
+  background-image: url("/bg/promo-bg.png");
 }
 
 /* Если ранее была запись с public/... — удалить/заменить её */
 .bg-\[url\(\'public\/bg\/promo-bg\.png\'\)\] {
-  background-image: url('/bg/promo-bg.png');
+  background-image: url("/bg/promo-bg.png");
 }
 
 /* Удалить или игнорировать правило с jpg, если оно больше не используется */

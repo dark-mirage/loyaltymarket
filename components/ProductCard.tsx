@@ -1,6 +1,6 @@
-'use client'
-import React from 'react';
-import { Product, ProductCardVariant } from './types';
+"use client";
+import React from "react";
+import { Product, ProductCardVariant } from "./types";
 
 interface Props {
   product: Product;
@@ -9,20 +9,30 @@ interface Props {
   hideFavoriteButton?: boolean;
 }
 
+const ProductCard: React.FC<Props> = ({
+  product,
+  onToggleFavorite,
+  variant = "normal",
+  hideFavoriteButton = false,
+}) => {
+  const widthClass =
+    variant === "compact" ? "w-full max-w-[143px]" : "w-full max-w-[180px]";
+  const imageMbClass = variant === "compact" ? "mb-[15px]" : "mb-[5px]";
 
-const ProductCard: React.FC<Props> = ({ product, onToggleFavorite, variant = 'normal', hideFavoriteButton = false }) => {
-  const widthClass = variant === 'compact' ? 'w-[143px]' : 'w-[180px]';
-  const imageMbClass = variant === 'compact' ? 'mb-[15px]' : 'mb-[5px]';
-  
   return (
     <div className={`${widthClass} flex-shrink-0`}>
-        <div
-          className={`relative bg-gray-100 rounded-xl overflow-hidden ${imageMbClass}`}
-          style={{ aspectRatio: '3/4' }}
-        >
-          <div className="absolute inset-0 flex items-center justify-center">
-          {typeof product.image === 'string' && /\.(png|jpe?g|svg|webp|avif)$/i.test(product.image) ? (
-            <img src={product.image} alt={product.name} className="w-full h-full object-cover rounded-xl bg-[var(--items-background)]" />
+      <div
+        className={`relative bg-gray-100 rounded-xl overflow-hidden ${imageMbClass}`}
+        style={{ aspectRatio: "3/4" }}
+      >
+        <div className="absolute inset-0 flex items-center justify-center">
+          {typeof product.image === "string" &&
+          /\.(png|jpe?g|svg|webp|avif)$/i.test(product.image) ? (
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-full object-cover rounded-xl bg-[var(--items-background)]"
+            />
           ) : (
             <div className="text-4xl">{product.image}</div>
           )}
@@ -34,8 +44,12 @@ const ProductCard: React.FC<Props> = ({ product, onToggleFavorite, variant = 'no
             aria-pressed={product.isFavorite}
           >
             <img
-              src={product.isFavorite ? '/icons/global/active-heart.svg' : '/icons/global/not-active-heart.svg'}
-              alt={product.isFavorite ? 'liked' : 'not liked'}
+              src={
+                product.isFavorite
+                  ? "/icons/global/active-heart.svg"
+                  : "/icons/global/not-active-heart.svg"
+              }
+              alt={product.isFavorite ? "liked" : "not liked"}
               className="w-[23px] h-[23px] bg-[rgba(244,243,241,1)]"
             />
           </button>
@@ -52,21 +66,20 @@ const ProductCard: React.FC<Props> = ({ product, onToggleFavorite, variant = 'no
             />
           </button>
         )}
+      </div>
+      {variant === "normal" && (
+        <img
+          className="mb-[6px]"
+          src="/icons/product/dots-mini-slider.svg"
+          alt="dots"
+        />
+      )}
 
-        </div>
-            {variant === 'normal' && (
-          <img
-            className="mb-[6px]"
-            src="/icons/product/dots-mini-slider.svg"
-            alt="dots"
-          />
-        )}
-      
-      <div className={variant === 'compact' ? 'pl-0' : 'pl-[4px]'}>
+      <div className={variant === "compact" ? "pl-0" : "pl-[4px]"}>
         <div className="text-sm mb-[4px] text-[18px] leading-[100%] tracking-[-0.04em]">
-          {product.price} 
+          {product.price}
         </div>
-        
+
         <div className="text-[12px] line-clamp-2 text-black font-inter font-normal text-[12px] leading-[120%] tracking-[0] mb-[7px]">
           {product.name}
         </div>

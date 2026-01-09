@@ -1,5 +1,5 @@
-'use client'
-import React from 'react';
+"use client";
+import React, { useMemo } from "react";
 
 interface LoyaltyProgramCard2Props {
   name: string;
@@ -24,8 +24,17 @@ export default function LoyaltyProgramCard2({
   image,
   isFavorite = false,
   onToggleFavorite,
-  onDetailsClick
+  onDetailsClick,
 }: LoyaltyProgramCard2Props) {
+  const formattedPoints = useMemo(() => {
+    if (points === undefined) return null;
+    try {
+      return new Intl.NumberFormat("ru-RU").format(points);
+    } catch {
+      return String(points);
+    }
+  }, [points]);
+
   return (
     <div className="bg-white rounded-2xl p-[16px] w-full max-w-[343px] relative shadow-sm">
       {/* Кнопка избранного */}
@@ -36,8 +45,12 @@ export default function LoyaltyProgramCard2({
           aria-pressed={isFavorite}
         >
           <img
-            src={isFavorite ? '/icons/global/active-heart.svg' : '/icons/global/not-active-heart.svg'}
-            alt={isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
+            src={
+              isFavorite
+                ? "/icons/global/active-heart.svg"
+                : "/icons/global/not-active-heart.svg"
+            }
+            alt={isFavorite ? "Удалить из избранного" : "Добавить в избранное"}
             className="w-full h-full"
           />
         </button>
@@ -47,8 +60,8 @@ export default function LoyaltyProgramCard2({
       <div className="flex items-center gap-[12px] mb-[12px]">
         {image && (
           <div className="w-[40px] h-[40px] rounded-full overflow-hidden flex-shrink-0 bg-[#F4F3F1]">
-            <img 
-              src={image} 
+            <img
+              src={image}
               alt={name}
               className="w-full h-full object-cover"
             />
@@ -108,7 +121,7 @@ export default function LoyaltyProgramCard2({
               Баллы
             </span>
             <span className="text-[13px] font-semibold leading-[1.06em] tracking-[0.01em] text-black">
-              {points.toLocaleString('ru-RU')}
+              {formattedPoints ?? points}
             </span>
           </div>
         )}
@@ -128,7 +141,3 @@ export default function LoyaltyProgramCard2({
     </div>
   );
 }
-
-
-
-

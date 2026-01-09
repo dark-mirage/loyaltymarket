@@ -17,8 +17,8 @@ export default function PromoInfoModal({ open, onClose }: PromoInfoModalProps) {
 
   useEffect(() => {
     if (open) {
-      setVisible(true);
-      return;
+      const frame = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(frame);
     }
     const timer = setTimeout(() => setVisible(false), 250);
     return () => clearTimeout(timer);
