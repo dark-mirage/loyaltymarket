@@ -484,6 +484,13 @@ export default function TrashBasketPage() {
                     {discountRub > 0 ? `-${formatRub(discountRub)}` : "0 ₽"}
                   </span>
                 </div>
+
+                {discountRub > 0 && appliedPromo ? (
+                  <div className="flex items-center justify-between text-[12px] text-black">
+                    <span className="pl-3">• Промокод {appliedPromo.code}</span>
+                    <span>-{formatRub(discountRub)}</span>
+                  </div>
+                ) : null}
                 <div className="flex items-center justify-between text-[14px] text-black">
                   <span className="flex items-center gap-2">
                     <span>Доставка</span>
