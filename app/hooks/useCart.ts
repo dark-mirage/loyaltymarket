@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 export type CartItem = {
   id: number;
   name: string;
+  shippingText: string;
   image: string;
   size?: string;
   article?: string;
@@ -15,15 +16,58 @@ export type CartItem = {
 };
 
 const STORAGE_KEY = "loyaltymarket_cart_v1";
+const CART_UPDATED_EVENT = "loyaltymarket_cart_updated";
 
-function safeParseCart(value: string | null): CartItem[] {
-  if (!value) return [];
+const STRAY_DELIVERY_PREFIX = "Доставка из Китая до РФ";
+
+function containsStrayDeliveryText(value: string) {
+  // tolerate different spacing/currency variants by matching only the stable prefix
+  return value.includes(STRAY_DELIVERY_PREFIX);
+}
+
+type ParsedCartResult = {
+  items: CartItem[];
+  invalid: boolean;
+};
+
+function safeParseCart(value: string | null): ParsedCartResult {
+  if (!value) return { items: [], invalid: false };
   try {
     const parsed = JSON.parse(value);
-    if (!Array.isArray(parsed)) return [];
-    return parsed as CartItem[];
+    if (!Array.isArray(parsed)) return { items: [], invalid: false };
+
+    // If old/bad data got stored where delivery text was saved as the product title,
+    // consider the cache invalid and fall back to seed.
+    const invalid = parsed.some(
+      (x) => typeof x?.name === "string" && containsStrayDeliveryText(x.name)
+    );
+    if (invalid) return { items: [], invalid: true };
+
+    // Migrate older cache versions: ensure shippingText exists.
+    const items = (parsed as unknown[]).map((entry) => {
+      const x: Record<string, unknown> =
+        typeof entry === "object" && entry !== null
+          ? (entry as Record<string, unknown>)
+          : {};
+
+      const deliveryText =
+        typeof x.deliveryText === "string" ? x.deliveryText : "";
+      const shippingText =
+        typeof x.shippingText === "string"
+          ? x.shippingText
+          : deliveryText.includes("из Китая")
+          ? "Доставка из Китая до РФ 0₽"
+          : "";
+
+      return {
+        ...x,
+        shippingText,
+      } as CartItem;
+    });
+
+    return { items, invalid: false };
   } catch {
-    return [];
+    return { items: [], invalid: false };
   }
 }
 
@@ -32,12 +76,30 @@ export function useCart(seed?: CartItem[]) {
   const [items, setItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
-    const fromStorage = safeParseCart(localStorage.getItem(STORAGE_KEY));
+    const raw = localStorage.getItem(STORAGE_KEY);
+
+    const { items: fromStorage, invalid } = safeParseCart(raw);
+    if (invalid) {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch {
+        // ignore
+      }
+    }
+
     if (fromStorage.length > 0) {
       setItems(fromStorage);
     } else if (seed && seed.length > 0) {
       setItems(seed);
     }
+
+    // Notify listeners (e.g. footer badge) on initial load.
+    try {
+      window.dispatchEvent(new Event(CART_UPDATED_EVENT));
+    } catch {
+      // ignore
+    }
+
     setReady(true);
     // seed intentionally only used on first load
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,6 +109,9 @@ export function useCart(seed?: CartItem[]) {
     if (!ready) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+
+      // Notify listeners (e.g. footer badge).
+      window.dispatchEvent(new Event(CART_UPDATED_EVENT));
     } catch {
       // ignore storage errors
     }

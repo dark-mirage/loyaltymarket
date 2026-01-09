@@ -11,6 +11,7 @@ const SEED_ITEMS: CartItem[] = [
   {
     id: 1,
     name: "Худи Carne Bollente",
+    shippingText: "Доставка из Китая до РФ 0₽",
     image: "/products/t-shirt-1.png",
     size: "L",
     article: "4465457",
@@ -22,6 +23,7 @@ const SEED_ITEMS: CartItem[] = [
   {
     id: 2,
     name: "Джинсы Carne Bollente",
+    shippingText: "Доставка из Китая до РФ 0₽",
     image: "/products/t-shirt-2.png",
     size: "L",
     article: "4465457",
@@ -33,6 +35,7 @@ const SEED_ITEMS: CartItem[] = [
   {
     id: 3,
     name: "Джинсы Carne Bollente blue jeans...",
+    shippingText: "Доставка из Китая до РФ 0₽",
     image: "/products/shoes-1.png",
     size: "L",
     article: "4465457",
@@ -298,6 +301,9 @@ export default function TrashBasketPage() {
                           <div className="text-[14px] font-semibold leading-[1.2em] text-black truncate">
                             {item.name}
                           </div>
+                          <div className="text-[12px] text-[#DD8825] truncate my-1">
+                            {item.shippingText}
+                          </div>
                           <div className="mt-1 text-[12px] text-[#7E7E7E]">
                             {item.size ? `Размер: ${item.size}` : null}
                             {item.article
@@ -320,8 +326,11 @@ export default function TrashBasketPage() {
                         {formatRub(item.priceRub)}
                       </div>
 
-                      <div className="mt-1 text-[12px] text-[#7E7E7E]">
-                        {item.deliveryText}
+                      <div className="mt-1 flex items-center gap-2 text-[12px] text-[#7E7E7E]">
+                        {item.deliveryText.includes("из Китая") ? (
+                          <span className="inline-block w-2 h-2 rounded-full bg-[#E5E5E5]" />
+                        ) : null}
+                        <span>{item.deliveryText}</span>
                       </div>
 
                       <div className="mt-3 flex items-center justify-between">
