@@ -65,15 +65,8 @@ function pluralizeItemsRu(count: number) {
 }
 
 export default function TrashBasketPage() {
-  const {
-    items,
-    toggleFavorite,
-    removeItem,
-    setQuantity,
-    removeMany,
-    totalQuantity,
-    subtotalRub,
-  } = useCart(SEED_ITEMS);
+  const { items, toggleFavorite, removeItem, setQuantity, removeMany } =
+    useCart(SEED_ITEMS);
 
   const [unselectedIds, setUnselectedIds] = useState<Set<number>>(
     () => new Set()
@@ -85,6 +78,20 @@ export default function TrashBasketPage() {
     }
     return next;
   }, [items, unselectedIds]);
+
+  const { selectedQuantity, selectedSubtotalRub } = useMemo(() => {
+    let nextQuantity = 0;
+    let nextSubtotalRub = 0;
+    for (const item of items) {
+      if (!selectedIds.has(item.id)) continue;
+      nextQuantity += item.quantity;
+      nextSubtotalRub += item.priceRub * item.quantity;
+    }
+    return {
+      selectedQuantity: nextQuantity,
+      selectedSubtotalRub: nextSubtotalRub,
+    };
+  }, [items, selectedIds]);
 
   const allSelected = items.length > 0 && selectedIds.size === items.length;
 
@@ -165,8 +172,8 @@ export default function TrashBasketPage() {
     setAppliedPromo(null);
   };
 
-  const discountRub = appliedPromo?.discountRub ?? 0;
-  const totalRub = Math.max(0, subtotalRub - discountRub);
+  const discountRub = selectedQuantity > 0 ? appliedPromo?.discountRub ?? 0 : 0;
+  const totalRub = Math.max(0, selectedSubtotalRub - discountRub);
 
   const DELIVERY_TOOLTIP_TEXT =
     "Стоимость доставки рассчитывается при оформлении заказа и зависит от адреса и способа доставки.";
@@ -222,7 +229,7 @@ export default function TrashBasketPage() {
     );
   };
 
-  const itemsWord = pluralizeItemsRu(totalQuantity);
+  const itemsWord = pluralizeItemsRu(selectedQuantity);
 
   return (
     <div className="max-w-md mx-auto bg-[#F4F3F1] min-h-screen">
@@ -233,7 +240,7 @@ export default function TrashBasketPage() {
           </h1>
           {items.length > 0 ? (
             <span className="text-[13px] font-normal text-[#7E7E7E]">
-              {totalQuantity} {itemsWord}
+              {selectedQuantity} {itemsWord}
             </span>
           ) : null}
         </div>
@@ -472,14 +479,21 @@ export default function TrashBasketPage() {
               <div className="mt-4 space-y-2">
                 <div className="flex items-center justify-between text-[14px] text-black">
                   <span>
-                    {totalQuantity} {itemsWord}
+                    {selectedQuantity} {itemsWord}
                   </span>
                   <span className="font-semibold">
-                    {formatRub(subtotalRub)}
+                    {formatRub(selectedSubtotalRub)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-[14px] text-black">
-                  <span>Скидка</span>
+                  <span className="flex items-center gap-2">
+                    <span>Скидка</span>
+                    <img
+                      src="/icons/global/small-arrow.svg"
+                      alt=""
+                      className="w-[6px] h-[11px] rotate-90"
+                    />
+                  </span>
                   <span>
                     {discountRub > 0 ? `-${formatRub(discountRub)}` : "0 ₽"}
                   </span>
@@ -522,14 +536,22 @@ export default function TrashBasketPage() {
                     Итого
                   </span>
                   <div className="flex items-end justify-end gap-2">
-                    <span className="text-[32px] font-semibold leading-[1em] text-black">
-                      {formatRub(totalRub)}
-                    </span>
-                    {discountRub > 0 ? (
-                      <span className="text-[14px] font-medium text-[#7E7E7E] line-through leading-[1.1em]">
-                        {formatRub(subtotalRub)}
+                    {selectedQuantity > 0 ? (
+                      <>
+                        <span className="text-[32px] font-semibold leading-[1em] text-black">
+                          {formatRub(totalRub)}
+                        </span>
+                        {discountRub > 0 ? (
+                          <span className="text-[14px] font-medium text-[#7E7E7E] line-through leading-[1.1em]">
+                            {formatRub(selectedSubtotalRub)}
+                          </span>
+                        ) : null}
+                      </>
+                    ) : (
+                      <span className="text-[14px] font-semibold text-[#7E7E7E]">
+                        Выберите товары
                       </span>
-                    ) : null}
+                    )}
                   </div>
                 </div>
               </div>
@@ -552,27 +574,40 @@ export default function TrashBasketPage() {
       {items.length > 0 ? (
         <div className="fixed left-0 right-0 bottom-[80px] ">
           <div className="max-w-md mx-auto p-[10px] pt-[15px] bg-white rounded-t-[25px]">
-            <div className="bg-[#2D2D2D] rounded-[16px] px-[16px] py-[18px] flex items-center justify-between">
-              <span className="text-[13px] font-semibold text-white">
-                {totalQuantity} {pluralizeItemsRu(totalQuantity)}
-              </span>
-              <button
-                type="button"
-                className="text-[13px] font-semibold text-white"
-                disabled={items.length === 0}
-              >
-                К оформлению
-              </button>
-              <div className="flex items-center justify-end gap-2">
-                <span className="text-[13px] font-semibold text-white">
-                  {formatRub(totalRub)}
-                </span>
-                {discountRub > 0 ? (
-                  <span className="text-[12px] font-semibold text-white/60 line-through">
-                    {formatRub(subtotalRub)}
+            <div
+              className={
+                "rounded-[16px] px-[16px] py-[18px] flex items-center justify-between " +
+                (selectedQuantity > 0 ? "bg-[#2D2D2D]" : "bg-[#2D2D2D99]")
+              }
+            >
+              {selectedQuantity > 0 ? (
+                <>
+                  <span className="text-[13px] font-semibold text-white">
+                    {selectedQuantity} {pluralizeItemsRu(selectedQuantity)}
                   </span>
-                ) : null}
-              </div>
+                  <button
+                    type="button"
+                    className="text-[13px] font-semibold text-white"
+                    disabled={selectedQuantity === 0}
+                  >
+                    К оформлению
+                  </button>
+                  <div className="flex items-center justify-end gap-2">
+                    <span className="text-[13px] font-semibold text-white">
+                      {formatRub(totalRub)}
+                    </span>
+                    {discountRub > 0 ? (
+                      <span className="text-[12px] font-semibold text-white/60 line-through">
+                        {formatRub(selectedSubtotalRub)}
+                      </span>
+                    ) : null}
+                  </div>
+                </>
+              ) : (
+                <p className="w-full text-center text-[13px] font-semibold text-white">
+                  Выберите товары
+                </p>
+              )}
             </div>
           </div>
         </div>
