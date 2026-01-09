@@ -2,6 +2,8 @@
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
 import Footer from "../../components/layout/Footer";
 import ProductSection from "../../components/ProductSection";
 import type { Product } from "../../components/types";
@@ -64,13 +66,19 @@ function pluralizeItemsRu(count: number) {
   return "товаров";
 }
 
+const CHECKOUT_SELECTED_KEY = "loyaltymarket_checkout_selected_ids_v1";
+const CHECKOUT_PROMO_KEY = "loyaltymarket_checkout_promo_v1";
+
 export default function TrashBasketPage() {
+  const router = useRouter();
   const { items, toggleFavorite, removeItem, setQuantity, removeMany } =
     useCart(SEED_ITEMS);
 
   const [unselectedIds, setUnselectedIds] = useState<Set<number>>(
     () => new Set()
   );
+
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const selectedIds = useMemo(() => {
     const next = new Set<number>();
     for (const item of items) {
@@ -113,13 +121,16 @@ export default function TrashBasketPage() {
     });
   };
 
-  const deleteSelected = () => {
+  const openDeleteConfirm = () => setDeleteConfirmOpen(true);
+  const closeDeleteConfirm = () => setDeleteConfirmOpen(false);
+  const confirmDeleteSelected = () => {
     removeMany(selectedIds);
     setUnselectedIds((prev) => {
       const next = new Set(prev);
       for (const id of selectedIds) next.add(id);
       return next;
     });
+    setDeleteConfirmOpen(false);
   };
 
   const removeOne = (id: number) => {
@@ -170,6 +181,25 @@ export default function TrashBasketPage() {
 
     setPromoStatus("error");
     setAppliedPromo(null);
+  };
+
+  const proceedToCheckout = () => {
+    if (selectedIds.size === 0) return;
+    try {
+      localStorage.setItem(
+        CHECKOUT_SELECTED_KEY,
+        JSON.stringify(Array.from(selectedIds))
+      );
+
+      if (appliedPromo) {
+        localStorage.setItem(CHECKOUT_PROMO_KEY, JSON.stringify(appliedPromo));
+      } else {
+        localStorage.removeItem(CHECKOUT_PROMO_KEY);
+      }
+    } catch {
+      // ignore
+    }
+    router.push("/checkout");
   };
 
   const discountRub = selectedQuantity > 0 ? appliedPromo?.discountRub ?? 0 : 0;
@@ -249,7 +279,7 @@ export default function TrashBasketPage() {
           <div className="mt-3 flex items-center justify-between">
             <button
               type="button"
-              onClick={deleteSelected}
+              onClick={openDeleteConfirm}
               className="text-[13px] font-medium text-[#7E7E7E] flex items-center gap-1.5"
               disabled={selectedIds.size === 0}
             >
@@ -571,8 +601,9 @@ export default function TrashBasketPage() {
         </div>
       </main>
 
+      {/* К оформлению tugmasi - z-40 bilan */}
       {items.length > 0 ? (
-        <div className="fixed left-0 right-0 bottom-[80px] ">
+        <div className="fixed left-0 right-0 bottom-[80px] z-40">
           <div className="max-w-md mx-auto p-[10px] pt-[15px] bg-white rounded-t-[25px]">
             <div
               className={
@@ -589,6 +620,7 @@ export default function TrashBasketPage() {
                     type="button"
                     className="text-[13px] font-semibold text-white"
                     disabled={selectedQuantity === 0}
+                    onClick={proceedToCheckout}
                   >
                     К оформлению
                   </button>
@@ -608,6 +640,46 @@ export default function TrashBasketPage() {
                   Выберите товары
                 </p>
               )}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Delete modal - overlay bottom-[80px] dan boshlanadi */}
+      {deleteConfirmOpen ? (
+        <div
+          className="fixed left-0 right-0 top-0 bottom-[80px] z-50 bg-[#2D2D2D99]"
+          onClick={closeDeleteConfirm}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="absolute left-0 right-0 bottom-0">
+            <div className="max-w-md mx-auto px-[0]">
+              <div
+                className="bg-white rounded-t-[25px] px-4 pt-3 pb-4"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="w-[52px] h-[5px] rounded-full bg-[#E5E5E5] mx-auto" />
+
+                <button
+                  type="button"
+                  onClick={confirmDeleteSelected}
+                  className="mt-5 w-full flex items-center gap-2 text-left"
+                >
+                  <Trash2 className="w-[15px] h-[20px] text-[#AA2D2D]" />
+                  <span className="text-[15px] font-semibold text-[#AA2D2D]">
+                    Удалить товары из корзины
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={closeDeleteConfirm}
+                  className="mt-5 w-full h-[57px] rounded-[16px] bg-[#F4F3F1] text-[15px] font-medium text-black"
+                >
+                  Отмена
+                </button>
+              </div>
             </div>
           </div>
         </div>
