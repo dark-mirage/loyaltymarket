@@ -250,7 +250,7 @@ export default function TrashBasketPage() {
                 type="checkbox"
                 checked={allSelected}
                 onChange={toggleSelectAll}
-                className="h-5 w-5 accent-black"
+                className="lm-checkbox"
               />
             </label>
           </div>
@@ -284,7 +284,7 @@ export default function TrashBasketPage() {
                   className="bg-white rounded-[25px] px-4 pt-5 pb-4"
                 >
                   <div className="flex gap-3">
-                    <div className="w-[92px] h-[92px] rounded-xl bg-[#F4F3F1] overflow-hidden flex-shrink-0">
+                    <div className="w-[92px] h-[92px] rounded-xl bg-[#F4F3F1] overflow-hidden flex-shrink-0 p-2">
                       <img
                         src={item.image}
                         alt={item.name}
@@ -312,7 +312,7 @@ export default function TrashBasketPage() {
                           type="checkbox"
                           checked={selectedIds.has(item.id)}
                           onChange={() => toggleSelect(item.id)}
-                          className="h-5 w-5 accent-black flex-shrink-0"
+                          className="lm-checkbox flex-shrink-0"
                         />
                       </div>
 

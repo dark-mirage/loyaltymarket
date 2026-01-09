@@ -110,3 +110,27 @@ body {
 }
 
 /* Удалить или игнорировать правило с jpg, если оно больше не используется */
+
+/* Custom checkbox (Tailwind v4, no forms plugin) */
+.lm-checkbox {
+  @apply h-5 w-5 appearance-none rounded-[6px] border border-[#E5E5E5] bg-white grid place-content-center;
+}
+
+.lm-checkbox:checked {
+  @apply bg-black border-black;
+}
+
+.lm-checkbox:checked::after {
+  content: "";
+  width: 6px;
+  height: 10px;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(45deg);
+  margin-top: -2px;
+}
+
+.lm-checkbox:focus-visible {
+  outline: 2px solid #2d2d2d;
+  outline-offset: 2px;
+}
