@@ -59,6 +59,8 @@ export default function CheckoutPage() {
 
   const [deliveryMode] = useState<"pickup" | "courier">("pickup");
   const [usePoints, setUsePoints] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"sbp" | "card">("sbp");
+  const [useSplit, setUseSplit] = useState(false);
 
   const selectedIds = useMemo(() => readSelectedIds(), []);
   const promo = useMemo(() => readPromo(), []);
@@ -197,11 +199,11 @@ export default function CheckoutPage() {
               </button>
             </div>
           ) : (
-            <div className="mt-4 space-y-4">
+            <div className="mt-2 space-y-2">
               {groupedByDelivery.map(([deliveryText, groupItems]) => {
                 const first = groupItems[0];
                 return (
-                  <div key={deliveryText} className="space-y-3">
+                  <div key={deliveryText} className="space-y-[14px] mt-[14px]">
                     <div className="bg-[#F4F3F1] rounded-[16px] px-4 py-3">
                       <div className="flex items-start gap-2 text-black">
                         <span className="inline-block w-2 h-2 rounded-full bg-[#E5E5E5] mt-2" />
@@ -224,7 +226,7 @@ export default function CheckoutPage() {
                     {groupItems.map((x) => (
                       <div
                         key={x.id}
-                        className="bg-white rounded-[16px] py-3 flex items-center gap-3"
+                        className="bg-white rounded-[16px] py-1 flex items-center gap-3"
                       >
                         <div className="w-[69px] h-[67px] rounded-[10px] bg-[#F4F3F1] overflow-hidden flex-shrink-0 p-1">
                           <img
@@ -263,26 +265,44 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          <div className="mt-6 bg-white rounded-[16px] p-4">
+          <div className="mt-[22px] mb-[8px] bg-[#F4F3F1] rounded-[16px] p-4">
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                className="h-[52px] rounded-[16px] border-2 border-black bg-white flex items-center justify-between px-4"
+                aria-pressed={paymentMethod === "sbp"}
+                onClick={() => setPaymentMethod("sbp")}
+                className={
+                  "rounded-[16px] bg-[#F4F3F1] flex items-start justify-start flex-col p-4 gap-2 " +
+                  (paymentMethod === "sbp"
+                    ? "border-2 border-black"
+                    : "border-2 border-[#2D2D2D47]")
+                }
               >
+                <span className="w-[27px] h-[27px] p-1 flex items-center justify-center rounded-[50%] bg-white border-[1px] border-[#D2D0CA]">
+                  <img
+                    src="/icons/global/cbp.png"
+                    alt=""
+                    className="w-full h-full object-contain"
+                  />
+                </span>
                 <span className="text-[14px] font-semibold text-black">
                   СБП
                 </span>
-                <img
-                  src="/icons/footer/Poizon.svg"
-                  alt=""
-                  className="w-6 h-6 opacity-0"
-                />
               </button>
               <button
                 type="button"
-                className="h-[52px] rounded-[16px] border border-[#E5E5E5] bg-white flex items-center justify-center gap-2"
+                aria-pressed={paymentMethod === "card"}
+                onClick={() => setPaymentMethod("card")}
+                className={
+                  "rounded-[16px] bg-[#F4F3F1] flex items-center justify-center flex-col gap-0 " +
+                  (paymentMethod === "card"
+                    ? "border-2 border-black"
+                    : "border-2 border-[#E5E5E5]")
+                }
               >
-                <span className="text-[18px] text-black">+</span>
+                <span className="text-[40px] font-light leading-[100%] text-black">
+                  +
+                </span>
                 <span className="text-[14px] font-semibold text-black">
                   Добавить карту
                 </span>
@@ -371,29 +391,98 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <div className="bg-[#F4F3F1]">
-            <div className="max-w-md mx-auto px-4 pb-4">
+          <div className="mt-4">
+            <div className="max-w-md mx-auto px-0">
+              <div className="bg-[#F4F3F1] rounded-[16px] px-4 py-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3 min-w-0">
+                    <img
+                      src="/icons/global/split.svg"
+                      alt=""
+                      className="w-[34px] h-[34px]"
+                    />
+                    <div className="min-w-0">
+                      <div className="text-[16px] font-semibold text-black truncate">
+                        4×880₽ в сплит
+                      </div>
+                      <div className="text-[12px] text-[#7E7E7E]">
+                        На 2 месяца без переплаты
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    aria-label="Включить сплит"
+                    aria-pressed={useSplit}
+                    onClick={() => setUseSplit((v) => !v)}
+                    className={
+                      "w-[44px] h-[26px] rounded-full p-[3px] transition-colors flex-shrink-0 " +
+                      (useSplit ? "bg-[#2D2D2D]" : "bg-[#E5E5E5]")
+                    }
+                  >
+                    <span
+                      className={
+                        "block w-[20px] h-[20px] rounded-full bg-white transition-transform " +
+                        (useSplit ? "translate-x-[18px]" : "translate-x-0")
+                      }
+                    />
+                  </button>
+                </div>
+
+                <div className="mt-3 flex items-center justify-between text-[12px] text-[#7E7E7E]">
+                  <span>Сегодня</span>
+                  <span>Ещё 3 платежа раз в 2 недели</span>
+                </div>
+                <div className="mt-2 flex w-full gap-1">
+                  <div className="h-[6px] flex-1 rounded-full bg-black" />
+                  <div className="h-[6px] flex-1 rounded-full bg-[#D2D0CA]" />
+                  <div className="h-[6px] flex-1 rounded-full bg-[#D2D0CA]" />
+                  <div className="h-[6px] flex-1 rounded-full bg-[#D2D0CA]" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div className="max-w-md mt-[20px] mx-auto pb-4 ">
               <button
                 type="button"
                 disabled={selectedQuantity === 0}
                 className={
-                  "w-full h-[54px] rounded-[16px] text-[16px] font-semibold " +
+                  "w-full h-[54px] rounded-[16px] text-[15px] font-medium flex items-center justify-center gap-2 select-none transition-transform transition-opacity active:scale-[0.98] active:opacity-90 disabled:active:scale-100 disabled:active:opacity-100 " +
                   (selectedQuantity > 0
                     ? "bg-[#2D2D2D] text-white"
                     : "bg-[#2D2D2D99] text-white")
                 }
               >
-                Оплатить через СБП
+                <span>Оплатить через СБП</span>{" "}
+                <img
+                  src="/icons/global/cbp.png"
+                  alt=""
+                  className="w-[18px] h-[20px]"
+                />
               </button>
 
-              <div className="mt-3 text-center text-[12px] text-[#7E7E7E]">
-                Безопасное оформление заказа
+              <div className="mt-[26px] text-center text-[12px] text-[#000000] flex items-center justify-center gap-2">
+                <img src="/icons/global/security.png" alt="" />{" "}
+                <span>Безопасное оформление заказа</span>
               </div>
 
-              <div className="mt-2 text-center text-[10px] text-[#B6B6B6] leading-[1.3em]">
-                Нажимая «Оплатить через СБП», вы принимаете условия публичной
-                оферты, пользовательского соглашения и даете согласие на
-                обработку персональных данных.
+              <div className="mt-[26px] text-start text-[11px] text-[#2D2D2D] leading-[1.3em]">
+                Нажимая «Оплатить через СБП», вы принимаете условия{" "}
+                <a href="#" className="underline">
+                  публичной оферты
+                </a>
+                ,{" "}
+                <a href="#" className="underline">
+                  пользовательского соглашения
+                </a>{" "}
+                и даете согласие на{" "}
+                <a href="#" className="underline">
+                  обработку персональных данных
+                </a>
+                .
               </div>
             </div>
           </div>
