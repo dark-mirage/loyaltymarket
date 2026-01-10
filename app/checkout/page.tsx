@@ -107,14 +107,18 @@ export default function CheckoutPage() {
         </h1>
 
         <div className="mt-4 grid grid-cols-2 gap-3 px-4">
-          <div className="rounded-[16px] bg-white border-2 border-black p-4">
+          <button
+            type="button"
+            onClick={() => router.push("/checkout/pickup")}
+            className="rounded-[16px] bg-white border-2 border-black p-4 text-left"
+          >
             <div className="text-[14px] font-semibold text-black">
               Пункт выдачи
             </div>
             <div className="mt-6 text-[12px] text-[#7E7E7E]">
               {deliveryPriceText}
             </div>
-          </div>
+          </button>
           <div className="rounded-[16px] bg-white border border-[#E5E5E5] p-4 opacity-60">
             <div className="text-[14px] font-semibold text-black">Курьером</div>
             <div className="mt-6 text-[12px] text-[#7E7E7E] leading-[1.1em]">
@@ -125,7 +129,11 @@ export default function CheckoutPage() {
 
         <div className="w-full mt-[12px] p-[16px] pb-[80px] bg-white rounded-t-[25px]">
           <div className="mt-4 bg-white rounded-[16px] overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-4 border-b bg-[#F4F3F1] border-[#E5E5E5]">
+            <button
+              type="button"
+              onClick={() => router.push("/checkout/pickup")}
+              className="w-full flex items-center justify-between px-4 py-4 border-b bg-[#F4F3F1] border-[#E5E5E5] text-left"
+            >
               <div className="flex items-center gap-3">
                 <img
                   src="/icons/global/location.svg"
@@ -142,7 +150,7 @@ export default function CheckoutPage() {
                 alt=""
                 className="w-[6px] h-[11px]"
               />
-            </div>
+            </button>
 
             <div className="flex items-center justify-between px-4 py-4 border-b bg-[#F4F3F1] border-[#E5E5E5]">
               <div className="flex items-center gap-3">
@@ -450,7 +458,7 @@ export default function CheckoutPage() {
                 type="button"
                 disabled={selectedQuantity === 0}
                 className={
-                  "w-full h-[54px] rounded-[16px] text-[15px] font-medium flex items-center justify-center gap-2 select-none transition-transform transition-opacity active:scale-[0.98] active:opacity-90 disabled:active:scale-100 disabled:active:opacity-100 " +
+                  "w-full h-[54px] rounded-[16px] text-[15px] font-medium flex items-center justify-center gap-2 select-none transition active:scale-[0.98] active:opacity-90 disabled:active:scale-100 disabled:active:opacity-100 " +
                   (selectedQuantity > 0
                     ? "bg-[#2D2D2D] text-white"
                     : "bg-[#2D2D2D99] text-white")
