@@ -3,6 +3,7 @@ import "./styles/globals.css";
 import Script from "next/script";
 
 import { cn } from "./shared";
+import WebViewErrorAlert from "./components/WebViewErrorAlert";
 
 // const inter = Inter({ subsets: ['latin', 'cyrillic', 'cyrillic-ext'], display: 'swap', variable: '--font-inter' });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
         )}
       >
         {children}
+        <WebViewErrorAlert />
       </body>
     </html>
   );
