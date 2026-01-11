@@ -1,6 +1,7 @@
 "use client";
 
 import React, {
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -93,6 +94,16 @@ const TEST_PVZ_POINTS: PvzPoint[] = [
 ];
 
 export default function CheckoutPickupPage() {
+  return (
+    <Suspense
+      fallback={<div className="max-w-md mx-auto bg-white min-h-screen" />}
+    >
+      <CheckoutPickupPageInner />
+    </Suspense>
+  );
+}
+
+function CheckoutPickupPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
