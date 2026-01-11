@@ -109,7 +109,7 @@ export default function CheckoutPage() {
         <div className="mt-4 grid grid-cols-2 gap-3 px-4">
           <button
             type="button"
-            onClick={() => router.push("/checkout/pickup")}
+            onClick={() => router.push("/checkout/pickup?step=search")}
             className="rounded-[16px] bg-white border-2 border-black p-4 text-left"
           >
             <div className="text-[14px] font-semibold text-black">
@@ -131,7 +131,7 @@ export default function CheckoutPage() {
           <div className="mt-4 bg-white rounded-[16px] overflow-hidden">
             <button
               type="button"
-              onClick={() => router.push("/checkout/pickup")}
+              onClick={() => router.push("/checkout/pickup?step=search")}
               className="w-full flex items-center justify-between px-4 py-4 border-b bg-[#F4F3F1] border-[#E5E5E5] text-left"
             >
               <div className="flex items-center gap-3">

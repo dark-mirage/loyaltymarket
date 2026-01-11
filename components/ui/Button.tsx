@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { cn } from "@/app/shared";
 
 type ButtonProps = {
   children: ReactNode;
@@ -22,9 +23,8 @@ export default function Button({
   iconRight,
   ...props
 }: ButtonProps) {
-
   const base =
-    "inline-flex items-center justify-center rounded-md font-medium transition select-none ";
+    "inline-flex items-center justify-center rounded-md font-medium transition select-none";
 
   const variants: Record<string, string> = {
     primary: "bg-black text-white hover:bg-neutral-900",
@@ -44,20 +44,15 @@ export default function Button({
     <button
       {...props}
       disabled={disabled || loading}
-      className={
-        base +
-        variants[variant] +
-        " " +
-        sizes[size] +
-        " " +
-        (disabled || loading ? disabledStyles : "") +
-        " " +
+      className={cn(
+        base,
+        variants[variant],
+        sizes[size],
+        (disabled || loading) && disabledStyles,
         className
-      }
-    >
-      {loading && (
-        <span className="mr-2 inline-block animate-pulse">…</span>
       )}
+    >
+      {loading && <span className="mr-2 inline-block animate-pulse">…</span>}
 
       {iconLeft && <span className="mr-2">{iconLeft}</span>}
 
