@@ -704,17 +704,7 @@ function CheckoutPickupPageInner() {
       pvzMarkersRef.current.set(point.id, marker);
     }
 
-    // Auto focus/open popup for selected point if it is visible.
-    if (selectedPvzId) {
-      const marker = pvzMarkersRef.current.get(selectedPvzId);
-      if (marker) {
-        try {
-          marker.openPopup();
-        } catch {
-          // ignore
-        }
-      }
-    }
+    // Don't auto-open popups on pan/zoom; open only on explicit user click.
   }, [
     step,
     mapInitTick,
