@@ -25,7 +25,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className={cn(
           // inter.className,
-          "font-[Inter,sans-serif] !text-black box-border"
+          "font-[Inter,sans-serif] text-black! box-border"
         )}
       >
         {children}

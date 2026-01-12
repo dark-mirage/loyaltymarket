@@ -47,51 +47,124 @@ type PvzPoint = {
   lon: number;
 };
 
-type MapSelection = {
-  title: string;
-  subtitle: string;
-  lat: number;
-  lon: number;
-};
-
-const TEST_PVZ_POINTS: PvzPoint[] = [
-  {
-    id: "pvz-yandex-1",
-    provider: "Яндекс Доставка",
-    address: "Москва, Никольская ул, д. 17, стр. 2",
-    deliveryText: "Доставка 2-5 дней",
-    priceText: "Стоимость — 726₽",
-    lat: 55.7577,
-    lon: 37.6217,
-  },
-  {
-    id: "pvz-cdek-1",
-    provider: "CDEK",
-    address: "Москва, Никольская ул, д. 17, стр. 2",
-    deliveryText: "Доставка 2-5 дней",
-    priceText: "Стоимость — 726₽",
-    lat: 55.7584,
-    lon: 37.6179,
-  },
-  {
-    id: "pvz-boxberry-1",
-    provider: "Boxberry",
-    address: "Москва, Никольская ул, д. 17, стр. 2",
-    deliveryText: "Доставка 2-5 дней",
-    priceText: "Стоимость — 726₽",
-    lat: 55.7509,
-    lon: 37.6166,
-  },
-  {
-    id: "pvz-post-1",
-    provider: "Почта России",
-    address: "Москва, Никольская ул, д. 17, стр. 2",
-    deliveryText: "Доставка 2-5 дней",
-    priceText: "Стоимость — 726₽",
-    lat: 55.7512,
-    lon: 37.6239,
-  },
+const PVZ_PROVIDERS: PvzProvider[] = [
+  "Яндекс Доставка",
+  "CDEK",
+  "Boxberry",
+  "Почта России",
 ];
+
+function generateTestPvzPoints(count: number): PvzPoint[] {
+  const cities = [
+    { city: "Москва", lat: 55.751244, lon: 37.618423 },
+    { city: "Санкт-Петербург", lat: 59.938732, lon: 30.316229 },
+    { city: "Новосибирск", lat: 55.030199, lon: 82.92043 },
+    { city: "Екатеринбург", lat: 56.838011, lon: 60.597465 },
+    { city: "Казань", lat: 55.796127, lon: 49.106414 },
+    { city: "Нижний Новгород", lat: 56.326944, lon: 44.0075 },
+    { city: "Самара", lat: 53.195873, lon: 50.100193 },
+    { city: "Омск", lat: 54.989342, lon: 73.368212 },
+    { city: "Ростов-на-Дону", lat: 47.235713, lon: 39.701505 },
+    { city: "Уфа", lat: 54.738762, lon: 55.972055 },
+    { city: "Красноярск", lat: 56.010563, lon: 92.852572 },
+    { city: "Воронеж", lat: 51.660781, lon: 39.200269 },
+    { city: "Пермь", lat: 58.010455, lon: 56.229443 },
+    { city: "Волгоград", lat: 48.708048, lon: 44.513303 },
+    { city: "Краснодар", lat: 45.03547, lon: 38.975313 },
+    { city: "Саратов", lat: 51.533103, lon: 46.034158 },
+    { city: "Тюмень", lat: 57.153033, lon: 65.534328 },
+    { city: "Тольятти", lat: 53.507836, lon: 49.420393 },
+    { city: "Ижевск", lat: 56.852744, lon: 53.211396 },
+    { city: "Барнаул", lat: 53.347997, lon: 83.779806 },
+    { city: "Иркутск", lat: 52.286387, lon: 104.28066 },
+    { city: "Хабаровск", lat: 48.480223, lon: 135.071917 },
+    { city: "Владивосток", lat: 43.115536, lon: 131.885485 },
+    { city: "Ярославль", lat: 57.626074, lon: 39.88447 },
+    { city: "Сочи", lat: 43.585472, lon: 39.723098 },
+    { city: "Калининград", lat: 54.710426, lon: 20.452214 },
+    { city: "Мурманск", lat: 68.970682, lon: 33.074981 },
+    { city: "Севастополь", lat: 44.61665, lon: 33.525367 },
+  ];
+
+  const streets = [
+    "Ленина ул",
+    "Советская ул",
+    "Мира ул",
+    "Победы ул",
+    "Школьная ул",
+    "Набережная ул",
+    "Садовая ул",
+    "Центральная ул",
+    "Парковая ул",
+    "Зеленая ул",
+  ];
+
+  const deliveryTextByProvider: Record<PvzProvider, string> = {
+    "Яндекс Доставка": "Доставка 1-3 дня",
+    CDEK: "Доставка 2-5 дней",
+    Boxberry: "Доставка 2-6 дней",
+    "Почта России": "Доставка 3-7 дней",
+  };
+
+  const points: PvzPoint[] = [];
+
+  const mulberry32 = (seed: number) => {
+    let t = seed >>> 0;
+    return () => {
+      t += 0x6d2b79f5;
+      let x = Math.imul(t ^ (t >>> 15), 1 | t);
+      x ^= x + Math.imul(x ^ (x >>> 7), 61 | x);
+      return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+    };
+  };
+
+  const perCityBase = Math.floor(count / cities.length);
+  const remainder = count % cities.length;
+  let globalIndex = 0;
+
+  for (let cityIndex = 0; cityIndex < cities.length; cityIndex++) {
+    const city = cities[cityIndex];
+    const cityCount = perCityBase + (cityIndex < remainder ? 1 : 0);
+
+    for (let j = 0; j < cityCount; j++) {
+      if (globalIndex >= count) break;
+
+      // Cycle providers inside each city so every city has all 4 types.
+      const provider = PVZ_PROVIDERS[j % PVZ_PROVIDERS.length];
+      const street = streets[(globalIndex + cityIndex) % streets.length];
+      const house = 1 + ((globalIndex * 7) % 140);
+      const building = 1 + (globalIndex % 5);
+
+      const rand = mulberry32(cityIndex * 10_000 + j + 1);
+      const angle = rand() * Math.PI * 2;
+      const radius = 0.01 + rand() * 0.18; // ~1km..20km (rough)
+      const dLat = Math.sin(angle) * radius;
+      const dLon =
+        Math.cos(angle) * radius * Math.cos((city.lat * Math.PI) / 180);
+
+      const lat = city.lat + dLat;
+      const lon = city.lon + dLon;
+
+      const price = 199 + ((globalIndex * 37) % 1200);
+
+      points.push({
+        id: `pvz-${globalIndex + 1}`,
+        provider,
+        address: `${city.city}, ${street}, д. ${house}, стр. ${building}`,
+        deliveryText: deliveryTextByProvider[provider],
+        priceText: `Стоимость — ${price}₽`,
+        lat,
+        lon,
+      });
+
+      globalIndex++;
+    }
+  }
+
+  return points;
+}
+
+const TEST_PVZ_POINTS: PvzPoint[] = generateTestPvzPoints(500);
 
 export default function CheckoutPickupPage() {
   return (
@@ -106,10 +179,15 @@ export default function CheckoutPickupPage() {
 function CheckoutPickupPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const searchParamsKey = searchParams.toString();
 
   const leafletRef = useRef<typeof import("leaflet") | null>(null);
   const mapRef = useRef<import("leaflet").Map | null>(null);
   const markerRef = useRef<import("leaflet").Marker | null>(null);
+  const pvzLayerRef = useRef<import("leaflet").LayerGroup | null>(null);
+  const pvzMarkersRef = useRef<Map<string, import("leaflet").Marker>>(
+    new Map()
+  );
   const userMarkerRef = useRef<
     import("leaflet").CircleMarker | import("leaflet").Marker | null
   >(null);
@@ -120,10 +198,10 @@ function CheckoutPickupPageInner() {
   const iconFixedRef = useRef(false);
 
   const initialStep = useMemo<"search" | "map" | "list">(() => {
-    const step = searchParams.get("step");
+    const step = new URLSearchParams(searchParamsKey).get("step");
     if (step === "map" || step === "list" || step === "search") return step;
     return "search";
-  }, [searchParams]);
+  }, [searchParamsKey]);
 
   const [step, setStep] = useState<"search" | "map" | "list">(initialStep);
 
@@ -132,7 +210,15 @@ function CheckoutPickupPageInner() {
   }, [initialStep]);
 
   const [pvzQuery, setPvzQuery] = useState("");
-  const [selection, setSelection] = useState<MapSelection | null>(null);
+
+  const [mapInitTick, setMapInitTick] = useState(0);
+  const [mapViewTick, setMapViewTick] = useState(0);
+  const mapBumpRafRef = useRef<number | null>(null);
+
+  const selectedPvzId = useMemo(() => {
+    const id = new URLSearchParams(searchParamsKey).get("pvzId");
+    return id && id.trim() ? id : null;
+  }, [searchParamsKey]);
 
   const [isUserTracking, setIsUserTracking] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
@@ -199,11 +285,20 @@ function CheckoutPickupPageInner() {
     });
   }, [query, suggestions]);
 
+  const replacePickupUrl = useCallback(
+    (update: (params: URLSearchParams) => void) => {
+      const params = new URLSearchParams(searchParamsKey);
+      update(params);
+      router.replace(`/checkout/pickup?${params.toString()}`);
+    },
+    [router, searchParamsKey]
+  );
+
   const setStepAndUrl = (next: "search" | "map" | "list") => {
     setStep(next);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("step", next);
-    router.replace(`/checkout/pickup?${params.toString()}`);
+    replacePickupUrl((params) => {
+      params.set("step", next);
+    });
   };
 
   const filteredPvz = useMemo(() => {
@@ -243,6 +338,21 @@ function CheckoutPickupPageInner() {
     userEverCenteredRef.current = false;
     setIsUserTracking(false);
   }, []);
+
+  const selectPvzOnMap = useCallback(
+    (pvzId: string) => {
+      stopUserTracking();
+      setStep("map");
+      replacePickupUrl((params) => {
+        params.set("step", "map");
+        params.set("pvzId", pvzId);
+        params.delete("address");
+        params.delete("lat");
+        params.delete("lon");
+      });
+    },
+    [replacePickupUrl, stopUserTracking]
+  );
 
   const startUserTracking = () => {
     setGeoError(null);
@@ -332,8 +442,9 @@ function CheckoutPickupPageInner() {
     geoWatchIdRef.current = watchId;
   };
 
-  const destroyMap = () => {
+  const destroyMap = useCallback(() => {
     stopUserTracking();
+
     try {
       markerRef.current?.remove();
     } catch {
@@ -342,12 +453,20 @@ function CheckoutPickupPageInner() {
     markerRef.current = null;
 
     try {
+      pvzLayerRef.current?.remove();
+    } catch {
+      // ignore
+    }
+    pvzLayerRef.current = null;
+    pvzMarkersRef.current.clear();
+
+    try {
       mapRef.current?.remove();
     } catch {
       // ignore
     }
     mapRef.current = null;
-  };
+  }, [stopUserTracking]);
 
   useEffect(() => {
     if (step !== "map") {
@@ -411,20 +530,25 @@ function CheckoutPickupPageInner() {
         }
       }
 
-      const urlLat = Number(searchParams.get("lat"));
-      const urlLon = Number(searchParams.get("lon"));
+      const params = new URLSearchParams(searchParamsKey);
+
+      const selectedFromUrl = params.get("pvzId");
+      const selectedPoint = selectedFromUrl
+        ? TEST_PVZ_POINTS.find((p) => p.id === selectedFromUrl)
+        : undefined;
+
+      const urlLat = Number(params.get("lat"));
+      const urlLon = Number(params.get("lon"));
       const urlHasCenter = Number.isFinite(urlLat) && Number.isFinite(urlLon);
 
-      const centerLat = selection?.lat ?? (urlHasCenter ? urlLat : 55.751244);
-      const centerLon = selection?.lon ?? (urlHasCenter ? urlLon : 37.618423);
+      const centerLat =
+        selectedPoint?.lat ?? (urlHasCenter ? urlLat : 55.751244);
+      const centerLon =
+        selectedPoint?.lon ?? (urlHasCenter ? urlLon : 37.618423);
 
-      const markerLat = selection?.lat ?? (urlHasCenter ? urlLat : null);
-      const markerLon = selection?.lon ?? (urlHasCenter ? urlLon : null);
-      const hasMarker =
-        markerLat != null &&
-        markerLon != null &&
-        Number.isFinite(markerLat) &&
-        Number.isFinite(markerLon);
+      const markerLat = selectedPoint ? null : urlHasCenter ? urlLat : null;
+      const markerLon = selectedPoint ? null : urlHasCenter ? urlLon : null;
+      const hasMarker = markerLat != null && markerLon != null;
 
       const map = L.map(el, {
         zoomControl: false,
@@ -437,6 +561,22 @@ function CheckoutPickupPageInner() {
         maxZoom: 19,
       }).addTo(map);
 
+      pvzLayerRef.current = L.layerGroup().addTo(map);
+      setMapInitTick((x) => x + 1);
+
+      const bump = () => {
+        if (mapBumpRafRef.current != null) return;
+        mapBumpRafRef.current = window.requestAnimationFrame(() => {
+          mapBumpRafRef.current = null;
+          setMapViewTick((x) => x + 1);
+        });
+      };
+
+      map.on("moveend", bump);
+      map.on("zoomend", bump);
+      // Kick the first render asynchronously to avoid update-depth loops.
+      window.setTimeout(bump, 0);
+
       if (hasMarker) {
         markerRef.current = L.marker([markerLat, markerLon]).addTo(map);
       }
@@ -447,7 +587,142 @@ function CheckoutPickupPageInner() {
     return () => {
       cancelled = true;
     };
-  }, [step, searchParams, selection]);
+  }, [step, searchParamsKey, destroyMap]);
+
+  const getPvzMarkerIcon = useCallback(
+    (
+      L: typeof import("leaflet"),
+      provider: PvzProvider,
+      isSelected: boolean
+    ) => {
+      const colorByProvider: Record<PvzProvider, string> = {
+        "Яндекс Доставка": "#111111",
+        CDEK: "#16A34A",
+        Boxberry: "#F97316",
+        "Почта России": "#2563EB",
+      };
+
+      const color = colorByProvider[provider] ?? "#111111";
+      const size = isSelected ? 18 : 14;
+      const ring = isSelected ? 4 : 2;
+
+      return L.divIcon({
+        className: "",
+        iconSize: [size + ring, size + ring],
+        iconAnchor: [(size + ring) / 2, (size + ring) / 2],
+        html: `
+          <div style="
+            width:${size + ring}px;
+            height:${size + ring}px;
+            border-radius:9999px;
+            background: rgba(255,255,255,0.9);
+            border:${ring}px solid ${color};
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+          ">
+            <div style="
+              width:${size}px;
+              height:${size}px;
+              border-radius:9999px;
+              background:${color};
+            "></div>
+          </div>
+        `,
+      });
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (step !== "map") return;
+
+    const L = leafletRef.current;
+    const map = mapRef.current;
+    const layer = pvzLayerRef.current;
+    if (!L || !map || !layer) return;
+
+    // Only render markers within current map bounds to keep performance OK with 1000+ points.
+    let bounds = map.getBounds();
+    try {
+      bounds = bounds.pad(0.25);
+    } catch {
+      // ignore
+    }
+
+    const pointsInView = TEST_PVZ_POINTS.filter((p) =>
+      bounds.contains([p.lat, p.lon])
+    );
+    const nextIds = new Set(pointsInView.map((p) => p.id));
+
+    // Remove markers that left the viewport.
+    for (const [id, marker] of pvzMarkersRef.current.entries()) {
+      if (nextIds.has(id)) continue;
+      try {
+        marker.remove();
+      } catch {
+        // ignore
+      }
+      pvzMarkersRef.current.delete(id);
+    }
+
+    // Add/update visible markers.
+    for (const point of pointsInView) {
+      const isSelected = selectedPvzId === point.id;
+      const existing = pvzMarkersRef.current.get(point.id);
+
+      if (existing) {
+        try {
+          existing.setIcon(getPvzMarkerIcon(L, point.provider, isSelected));
+        } catch {
+          // ignore
+        }
+        continue;
+      }
+
+      const marker = L.marker([point.lat, point.lon], {
+        icon: getPvzMarkerIcon(L, point.provider, isSelected),
+        keyboard: false,
+        title: `${point.provider} — ${point.address}`,
+      })
+        .addTo(layer)
+        .on("click", () => {
+          selectPvzOnMap(point.id);
+        });
+
+      marker.bindPopup(
+        `<div style="min-width: 200px">
+          <div style="font-weight:700; font-size:14px; margin-bottom:4px">${point.provider}</div>
+          <div style="font-size:12px; color:#555">${point.address}</div>
+          <div style="font-size:12px; margin-top:8px">${point.deliveryText}</div>
+          <div style="font-size:12px; margin-top:4px">${point.priceText}</div>
+        </div>`,
+        { closeButton: true }
+      );
+
+      pvzMarkersRef.current.set(point.id, marker);
+    }
+
+    // Auto focus/open popup for selected point if it is visible.
+    if (selectedPvzId) {
+      const marker = pvzMarkersRef.current.get(selectedPvzId);
+      if (marker) {
+        try {
+          marker.openPopup();
+        } catch {
+          // ignore
+        }
+      }
+    }
+  }, [
+    step,
+    mapInitTick,
+    mapViewTick,
+    selectedPvzId,
+    getPvzMarkerIcon,
+    selectPvzOnMap,
+  ]);
 
   useEffect(() => {
     if (step !== "map") return;
@@ -458,22 +733,36 @@ function CheckoutPickupPageInner() {
     const map = mapRef.current;
     if (!L || !map) return;
 
-    const urlLat = Number(searchParams.get("lat"));
-    const urlLon = Number(searchParams.get("lon"));
+    const params = new URLSearchParams(searchParamsKey);
+
+    const selectedFromUrl = params.get("pvzId");
+    const selectedPoint = selectedFromUrl
+      ? TEST_PVZ_POINTS.find((p) => p.id === selectedFromUrl)
+      : undefined;
+
+    const urlLat = Number(params.get("lat"));
+    const urlLon = Number(params.get("lon"));
     const urlHasCenter = Number.isFinite(urlLat) && Number.isFinite(urlLon);
 
-    const centerLat = selection?.lat ?? (urlHasCenter ? urlLat : 55.751244);
-    const centerLon = selection?.lon ?? (urlHasCenter ? urlLon : 37.618423);
+    const centerLat = selectedPoint?.lat ?? (urlHasCenter ? urlLat : 55.751244);
+    const centerLon = selectedPoint?.lon ?? (urlHasCenter ? urlLon : 37.618423);
 
-    const markerLat = selection?.lat ?? (urlHasCenter ? urlLat : null);
-    const markerLon = selection?.lon ?? (urlHasCenter ? urlLon : null);
-    const hasMarker =
-      markerLat != null &&
-      markerLon != null &&
-      Number.isFinite(markerLat) &&
-      Number.isFinite(markerLon);
+    const markerLat = selectedPoint ? null : urlHasCenter ? urlLat : null;
+    const markerLon = selectedPoint ? null : urlHasCenter ? urlLon : null;
+    const hasMarker = markerLat != null && markerLon != null;
 
-    map.setView([centerLat, centerLon], hasMarker ? 12 : 10, { animate: true });
+    const nextZoom = hasMarker ? 12 : 10;
+    const currentCenter = map.getCenter();
+    const currentZoom = map.getZoom();
+    const eps = 1e-6;
+    const needsMove =
+      Math.abs(currentCenter.lat - centerLat) > eps ||
+      Math.abs(currentCenter.lng - centerLon) > eps;
+    const needsZoom = currentZoom !== nextZoom;
+
+    if (needsMove || needsZoom) {
+      map.setView([centerLat, centerLon], nextZoom, { animate: true });
+    }
 
     try {
       markerRef.current?.remove();
@@ -485,7 +774,7 @@ function CheckoutPickupPageInner() {
     if (hasMarker) {
       markerRef.current = L.marker([markerLat, markerLon]).addTo(map);
     }
-  }, [step, searchParams, selection, isUserTracking]);
+  }, [step, searchParamsKey, isUserTracking]);
 
   useEffect(() => {
     if (step !== "map") {
@@ -705,15 +994,7 @@ function CheckoutPickupPageInner() {
             type="button"
             key={p.id}
             onClick={() => {
-              stopUserTracking();
-              setSelection({
-                title: p.provider,
-                subtitle: p.address,
-                lat: p.lat,
-                lon: p.lon,
-              });
-
-              setStepAndUrl("map");
+              selectPvzOnMap(p.id);
             }}
             className={
               "w-full text-left px-4 py-4 " +

@@ -610,6 +610,7 @@ export default function TrashBasketPage() {
                 "rounded-[16px] px-[16px] py-[18px] flex items-center justify-between " +
                 (selectedQuantity > 0 ? "bg-[#2D2D2D]" : "bg-[#2D2D2D99]")
               }
+              onClick={proceedToCheckout}
             >
               {selectedQuantity > 0 ? (
                 <>
@@ -620,7 +621,6 @@ export default function TrashBasketPage() {
                     type="button"
                     className="text-[13px] font-semibold text-white"
                     disabled={selectedQuantity === 0}
-                    onClick={proceedToCheckout}
                   >
                     К оформлению
                   </button>
