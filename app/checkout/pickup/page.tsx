@@ -843,6 +843,14 @@ function CheckoutPickupPageInner() {
         pvzProviderByIdRef.current.set(point.id, point.provider);
         const isSelected = selectedFromUrl === point.id;
 
+        const priceShort = (point.priceText || "")
+          .replace(/^Стоимость\s*[—-]\s*/i, "")
+          .trim();
+        const deliveryShort = (point.deliveryText || "")
+          .replace(/^Доставка\s*/i, "")
+          .trim();
+        const metaText = [priceShort, deliveryShort].filter(Boolean).join(", ");
+
         const marker = L.marker([point.lat, point.lon], {
           icon: getPvzMarkerIcon(L, point.provider, isSelected),
           keyboard: false,
@@ -852,13 +860,21 @@ function CheckoutPickupPageInner() {
         });
 
         marker.bindPopup(
-          `<div style="min-width: 200px">
-            <div style="font-weight:700; font-size:14px; margin-bottom:4px">${point.provider}</div>
-            <div style="font-size:12px; color:#555">${point.address}</div>
-            <div style="font-size:12px; margin-top:8px">${point.deliveryText}</div>
-            <div style="font-size:12px; margin-top:4px">${point.priceText}</div>
-          </div>`,
-          { closeButton: true }
+          `
+            <div class="pvzPopupCard" role="dialog" aria-label="${point.provider}">
+              <div class="pvzPopupText">
+                <div class="pvzPopupTitle">${point.provider}</div>
+                <div class="pvzPopupMeta">${metaText}</div>
+              </div>
+            </div>
+          `,
+          {
+            closeButton: false,
+            autoPan: true,
+            autoPanPadding: [16, 16],
+            className: "pvz-popup",
+            offset: [0, -28],
+          }
         );
 
         pvzMarkersRef.current.set(point.id, marker);

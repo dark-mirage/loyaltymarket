@@ -134,3 +134,61 @@ body {
   outline: 2px solid #2d2d2d;
   outline-offset: 2px;
 }
+
+/* PVZ (Leaflet) popup styling */
+.pvz-popup .leaflet-popup-content-wrapper {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+.pvz-popup .leaflet-popup-content {
+  margin: 0;
+}
+
+.pvz-popup .leaflet-popup-tip-container {
+  display: none;
+}
+
+.pvzPopupCard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 9999px;
+  background: #f4f3f1;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  min-width: 210px;
+}
+
+.pvzPopupIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  background: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.pvzPopupText {
+  min-width: 0;
+}
+
+.pvzPopupTitle {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.1;
+  color: #111111;
+}
+
+.pvzPopupMeta {
+  margin-top: 2px;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.1;
+  color: rgba(17, 17, 17, 0.7);
+}
