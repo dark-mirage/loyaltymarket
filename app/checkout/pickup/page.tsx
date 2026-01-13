@@ -247,10 +247,21 @@ function CheckoutPickupPageInner() {
 
   const [pvzQuery, setPvzQuery] = useState("");
 
+  const [activeProvider, setActiveProvider] = useState<"all" | PvzProvider>(
+    "all"
+  );
+
   const selectedPvzId = useMemo(() => {
     const id = new URLSearchParams(searchParamsKey).get("pvzId");
     return id && id.trim() ? id : null;
   }, [searchParamsKey]);
+
+  useEffect(() => {
+    if (!selectedPvzId) return;
+    const selectedPoint = ensurePvzIndex().get(selectedPvzId);
+    if (!selectedPoint) return;
+    setActiveProvider(selectedPoint.provider);
+  }, [ensurePvzIndex, selectedPvzId]);
 
   const [isUserTracking, setIsUserTracking] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
@@ -356,15 +367,20 @@ function CheckoutPickupPageInner() {
           return hay.includes(q);
         });
 
-    if (!userLocation) return base;
+    const providerFiltered =
+      activeProvider === "all"
+        ? base
+        : base.filter((x) => x.provider === activeProvider);
+
+    if (!userLocation) return providerFiltered;
 
     // Show nearest PVZ first once user's location is known.
-    return [...base].sort((a, b) => {
+    return [...providerFiltered].sort((a, b) => {
       const da = distanceKm(userLocation, { lat: a.lat, lon: a.lon });
       const db = distanceKm(userLocation, { lat: b.lat, lon: b.lon });
       return da - db;
     });
-  }, [ensurePvzPoints, pvzQuery, step, userLocation]);
+  }, [ensurePvzPoints, activeProvider, pvzQuery, step, userLocation]);
 
   const stopUserTracking = useCallback(() => {
     if (geoWatchIdRef.current != null) {
@@ -462,6 +478,52 @@ function CheckoutPickupPageInner() {
     },
     [isUserTracking]
   );
+
+  useEffect(() => {
+    if (step !== "map") return;
+
+    const cluster = pvzClusterRef.current as unknown as {
+      clearLayers?: () => void;
+      addLayers?: (xs: unknown[]) => void;
+      addLayer?: (x: unknown) => void;
+    } | null;
+
+    if (!cluster?.clearLayers) return;
+
+    const enabledProviders = new Set<PvzProvider>(
+      activeProvider === "all" ? PVZ_PROVIDERS : [activeProvider]
+    );
+
+    // Safety: keep selected PVZ visible even if filter doesn't match yet.
+    if (selectedPvzId) {
+      const selectedProvider = ensurePvzIndex().get(selectedPvzId)?.provider;
+      if (selectedProvider) enabledProviders.add(selectedProvider);
+    }
+
+    const markers: import("leaflet").Marker[] = [];
+    for (const [id, marker] of pvzMarkersRef.current.entries()) {
+      const provider = pvzProviderByIdRef.current.get(id);
+      if (!provider) continue;
+      if (!enabledProviders.has(provider)) continue;
+      markers.push(marker);
+    }
+
+    try {
+      cluster.clearLayers();
+    } catch {
+      // ignore
+    }
+
+    if (cluster.addLayers) {
+      cluster.addLayers(markers as unknown as unknown[]);
+    } else if (cluster.addLayer) {
+      for (const m of markers) cluster.addLayer(m);
+    }
+
+    if (selectedPvzId) {
+      requestAnimationFrame(() => openPvzPopup(selectedPvzId));
+    }
+  }, [openPvzPopup, activeProvider, ensurePvzIndex, selectedPvzId, step]);
 
   const startUserTracking = () => {
     setGeoError(null);
@@ -747,7 +809,6 @@ function CheckoutPickupPageInner() {
       const anyEl = el as unknown as { _leaflet_id?: unknown };
       if (anyEl._leaflet_id) {
         try {
-          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete anyEl._leaflet_id;
         } catch {
           anyEl._leaflet_id = undefined;
@@ -771,9 +832,7 @@ function CheckoutPickupPageInner() {
       const centerLon =
         selectedPoint?.lon ?? (urlHasCenter ? urlLon : 37.618423);
 
-      const markerLat = selectedPoint ? null : urlHasCenter ? urlLat : null;
-      const markerLon = selectedPoint ? null : urlHasCenter ? urlLon : null;
-      const hasMarker = markerLat != null && markerLon != null;
+      const hasMarker = !selectedPoint && urlHasCenter;
       const hasSelectedPvz = Boolean(selectedPoint);
 
       const initialZoom = hasSelectedPvz ? 14 : hasMarker ? 12 : 10;
@@ -895,9 +954,7 @@ function CheckoutPickupPageInner() {
         for (const m of markers) m.addTo(clusterGroup);
       }
 
-      if (hasMarker) {
-        markerRef.current = L.marker([markerLat, markerLon]).addTo(map);
-      }
+      // Do not add any non-PVZ marker when coming from Search.
 
       if (hasSelectedPvz && selectedFromUrl) {
         openPvzPopup(selectedFromUrl);
@@ -916,6 +973,7 @@ function CheckoutPickupPageInner() {
     ensurePvzIndex,
     ensurePvzPoints,
     getPvzMarkerIcon,
+    openPvzPopup,
     selectPvzOnMap,
   ]);
 
@@ -976,9 +1034,7 @@ function CheckoutPickupPageInner() {
     const centerLat = selectedPoint?.lat ?? (urlHasCenter ? urlLat : 55.751244);
     const centerLon = selectedPoint?.lon ?? (urlHasCenter ? urlLon : 37.618423);
 
-    const markerLat = selectedPoint ? null : urlHasCenter ? urlLat : null;
-    const markerLon = selectedPoint ? null : urlHasCenter ? urlLon : null;
-    const hasMarker = markerLat != null && markerLon != null;
+    const hasMarker = !selectedPoint && urlHasCenter;
     const hasSelectedPvz = Boolean(selectedPoint);
 
     // UX: never auto-zoom-out, only zoom-in when needed.
@@ -996,16 +1052,7 @@ function CheckoutPickupPageInner() {
       map.setView([centerLat, centerLon], nextZoom, { animate: true });
     }
 
-    try {
-      markerRef.current?.remove();
-    } catch {
-      // ignore
-    }
-    markerRef.current = null;
-
-    if (hasMarker) {
-      markerRef.current = L.marker([markerLat, markerLon]).addTo(map);
-    }
+    // Do not add any non-PVZ marker when coming from Search.
 
     if (hasSelectedPvz && selectedFromUrl) {
       openPvzPopup(selectedFromUrl);
@@ -1054,6 +1101,94 @@ function CheckoutPickupPageInner() {
   );
 
   if (step === "map") {
+    const ProviderIcon = ({ provider }: { provider: PvzProvider }) => {
+      if (provider === "CDEK") {
+        return (
+          <img src="/icons/global/CDEK.svg" alt="" width={16} height={16} />
+        );
+      }
+
+      if (provider === "Boxberry") {
+        return (
+          <img src="/icons/global/boxberry.svg" alt="" width={16} height={16} />
+        );
+      }
+
+      if (provider === "Яндекс Доставка") {
+        return (
+          <span className="text-white font-extrabold text-[14px] leading-none -translate-y-[0.5px]">
+            Я
+          </span>
+        );
+      }
+
+      return (
+        <span className="text-white font-extrabold text-[6px] leading-[1.05] uppercase text-center">
+          Почта
+          <br />
+          России
+        </span>
+      );
+    };
+
+    const ProviderChips = (
+      <div className="w-full">
+        <div className="flex gap-2 overflow-x-auto no-scrollbar">
+          <button
+            type="button"
+            aria-pressed={activeProvider === "all"}
+            onClick={() => setActiveProvider("all")}
+            className={
+              "shrink-0 h-10 px-3 rounded-full flex items-center gap-2 transition-colors border " +
+              (activeProvider === "all"
+                ? "bg-[#111111] text-white border-[#111111]"
+                : "bg-white text-[#111111] border-[#E5E5E5]")
+            }
+          >
+            <span className="w-7 h-7 rounded-full bg-[#111111] grid place-items-center border border-white/15">
+              <span className="grid grid-cols-2 gap-0.5">
+                <span className="w-[5px] h-[5px] rounded-full bg-white" />
+                <span className="w-[5px] h-[5px] rounded-full bg-white" />
+                <span className="w-[5px] h-[5px] rounded-full bg-white" />
+                <span className="w-[5px] h-[5px] rounded-full bg-white" />
+              </span>
+            </span>
+            <span className="text-[13px] font-semibold whitespace-nowrap">
+              Все
+            </span>
+          </button>
+          {PVZ_PROVIDERS.map((p) => {
+            const isOn = activeProvider === p;
+            return (
+              <button
+                key={p}
+                type="button"
+                aria-pressed={isOn}
+                onClick={() => setActiveProvider(p)}
+                className={
+                  "shrink-0 h-10 px-3 rounded-full flex items-center gap-2 transition-colors border " +
+                  (isOn
+                    ? "bg-[#111111] text-white border-[#111111]"
+                    : "bg-white text-[#111111] border-[#E5E5E5]")
+                }
+              >
+                <span className="w-7 h-7 rounded-full bg-[#111111] grid place-items-center border border-white/15">
+                  <ProviderIcon provider={p} />
+                </span>
+                <span className="text-[13px] font-semibold whitespace-nowrap">
+                  {p === "Яндекс Доставка"
+                    ? "Яндекс"
+                    : p === "Почта России"
+                    ? "Почта"
+                    : p}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+
     return (
       <div className="max-w-md mx-auto bg-white min-h-screen">
         <div className="h-screen w-full bg-[#F4F3F1] relative">
@@ -1067,7 +1202,7 @@ function CheckoutPickupPageInner() {
               isUserTracking ? stopUserTracking() : startUserTracking()
             }
             className={
-              "absolute right-4 bottom-24 z-1000 w-[46px] h-[46px] rounded-[50%] border border-[#E5E5E5] bg-white shadow-sm grid place-items-center transition-colors " +
+              "absolute right-4 bottom-44 z-1000 w-[46px] h-[46px] rounded-[50%] border border-[#E5E5E5] bg-white shadow-sm grid place-items-center transition-colors " +
               (isUserTracking ? "bg-[#F4F3F1]" : "")
             }
           >
@@ -1088,6 +1223,7 @@ function CheckoutPickupPageInner() {
         </div>
 
         <div className="fixed z-1000 bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-4 py-4">
+          <div className="mb-3">{ProviderChips}</div>
           <Button
             type="button"
             variant="primary"
