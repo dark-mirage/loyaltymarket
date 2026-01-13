@@ -411,6 +411,58 @@ function CheckoutPickupPageInner() {
     [replacePickupUrl, stopUserTracking]
   );
 
+  const openPvzPopup = useCallback(
+    (pvzId: string) => {
+      const marker = pvzMarkersRef.current.get(pvzId);
+      if (!marker) return;
+
+      if (isUserTracking) return;
+
+      const map = mapRef.current;
+      const panToMarker = () => {
+        if (!map) return;
+        try {
+          const latlng = (
+            marker as unknown as {
+              getLatLng: () => { lat: number; lng: number };
+            }
+          ).getLatLng();
+
+          map.panTo(latlng, { animate: true });
+        } catch {
+          // ignore
+        }
+      };
+
+      const cluster = pvzClusterRef.current as
+        | (import("leaflet").LayerGroup & {
+            zoomToShowLayer?: (layer: unknown, cb: () => void) => void;
+          })
+        | null;
+
+      const tryOpen = () => {
+        panToMarker();
+        try {
+          marker.openPopup();
+        } catch {
+          // ignore
+        }
+      };
+
+      if (cluster?.zoomToShowLayer) {
+        try {
+          cluster.zoomToShowLayer(marker as unknown as unknown, tryOpen);
+          return;
+        } catch {
+          // ignore and fallback
+        }
+      }
+
+      tryOpen();
+    },
+    [isUserTracking]
+  );
+
   const startUserTracking = () => {
     setGeoError(null);
 
@@ -542,38 +594,90 @@ function CheckoutPickupPageInner() {
       provider: PvzProvider,
       isSelected: boolean
     ) => {
-      const colorByProvider: Record<PvzProvider, string> = {
-        "Яндекс Доставка": "#111111",
-        CDEK: "#16A34A",
-        Boxberry: "#F97316",
-        "Почта России": "#2563EB",
-      };
+      const bubble = isSelected ? 54 : 48;
+      const tail = isSelected ? 16 : 14;
+      const border = isSelected ? 3 : 2;
+      const totalH = bubble + Math.floor(tail / 2);
+      const tailTop = bubble - Math.floor(tail / 2);
+      const shadow = isSelected
+        ? "0 14px 30px rgba(0,0,0,0.30)"
+        : "0 10px 22px rgba(0,0,0,0.22)";
 
-      const color = colorByProvider[provider] ?? "#111111";
-      const size = isSelected ? 18 : 14;
-      const ring = isSelected ? 4 : 2;
+      const iconHtml = (() => {
+        switch (provider) {
+          case "CDEK":
+            return `
+             <img src="/icons/global/CDEK.svg" alt="CDEK.svg" />
+            `;
+          case "Boxberry":
+            return `
+              <img src="/icons/global/boxberry.svg" alt="boxberry.svg" />
+            `;
+          case "Яндекс Доставка":
+            return `
+              <div style="
+                font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+                font-weight: 800;
+                font-size: 22px;
+                line-height: 1;
+                color: #FFFFFF;
+                transform: translateY(-1px);
+              ">Я</div>
+            `;
+          case "Почта России":
+            return `
+              <div style="
+                font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+                font-weight: 800;
+                font-size: 8px;
+                line-height: 1.05;
+                letter-spacing: 0.02em;
+                text-transform: uppercase;
+                color: #FFFFFF;
+                text-align: center;
+                transform: translateY(-1px);
+              ">ПОЧТА<br/>РОССИИ</div>
+            `;
+          default:
+            return "";
+        }
+      })();
 
       return L.divIcon({
-        className: "",
-        iconSize: [size + ring, size + ring],
-        iconAnchor: [(size + ring) / 2, (size + ring) / 2],
+        className: "pvz-div-icon",
+        iconSize: [bubble, totalH],
+        iconAnchor: [bubble / 2, totalH],
         html: `
-          <div style="
-            width:${size + ring}px;
-            height:${size + ring}px;
-            border-radius:9999px;
-            background: rgba(255,255,255,0.9);
-            border:${ring}px solid ${color};
-            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-          ">
+          <div style="position:relative; width:${bubble}px; height:${totalH}px;">
             <div style="
-              width:${size}px;
-              height:${size}px;
+              position:absolute;
+              left:0;
+              top:0;
+              width:${bubble}px;
+              height:${bubble}px;
               border-radius:9999px;
-              background:${color};
+              background:#111111;
+              border:${border}px solid #FFFFFF;
+              box-shadow:${shadow};
+              display:flex;
+              align-items:center;
+              justify-content:center;
+            ">
+              <div style=" display:flex; align-items:center; justify-content:center;">
+                ${iconHtml}
+              </div>
+            </div>
+            <div style="
+              position:absolute;
+              left:50%;
+              top:${tailTop}px;
+              width:${tail}px;
+              height:${tail}px;
+              background:#111111;
+              border:${border}px solid #FFFFFF;
+              transform: translateX(-50%) rotate(45deg);
+              border-radius: 3px;
+              box-shadow:${shadow};
             "></div>
           </div>
         `,
@@ -780,14 +884,7 @@ function CheckoutPickupPageInner() {
       }
 
       if (hasSelectedPvz && selectedFromUrl) {
-        const selectedMarker = pvzMarkersRef.current.get(selectedFromUrl);
-        if (selectedMarker) {
-          try {
-            selectedMarker.openPopup();
-          } catch {
-            // ignore
-          }
-        }
+        openPvzPopup(selectedFromUrl);
       }
     };
 
@@ -895,16 +992,9 @@ function CheckoutPickupPageInner() {
     }
 
     if (hasSelectedPvz && selectedFromUrl) {
-      const selectedMarker = pvzMarkersRef.current.get(selectedFromUrl);
-      if (selectedMarker) {
-        try {
-          selectedMarker.openPopup();
-        } catch {
-          // ignore
-        }
-      }
+      openPvzPopup(selectedFromUrl);
     }
-  }, [ensurePvzIndex, step, searchParamsKey, isUserTracking]);
+  }, [ensurePvzIndex, openPvzPopup, step, searchParamsKey, isUserTracking]);
 
   useEffect(() => {
     if (step !== "map") {
