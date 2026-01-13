@@ -9,6 +9,8 @@ import React, {
   useState,
 } from "react";
 import "leaflet/dist/leaflet.css";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import Button from "@/components/ui/Button";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -46,6 +48,22 @@ type PvzPoint = {
   lat: number;
   lon: number;
 };
+
+type LatLon = { lat: number; lon: number };
+
+function distanceKm(a: LatLon, b: LatLon): number {
+  const R = 6371;
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const dLat = toRad(b.lat - a.lat);
+  const dLon = toRad(b.lon - a.lon);
+  const lat1 = toRad(a.lat);
+  const lat2 = toRad(b.lat);
+  const sinDLat = Math.sin(dLat / 2);
+  const sinDLon = Math.sin(dLon / 2);
+  const h =
+    sinDLat * sinDLat + Math.cos(lat1) * Math.cos(lat2) * sinDLon * sinDLon;
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+}
 
 const PVZ_PROVIDERS: PvzProvider[] = [
   "Яндекс Доставка",
@@ -164,8 +182,6 @@ function generateTestPvzPoints(count: number): PvzPoint[] {
   return points;
 }
 
-const TEST_PVZ_POINTS: PvzPoint[] = generateTestPvzPoints(500);
-
 export default function CheckoutPickupPage() {
   return (
     <Suspense
@@ -184,10 +200,14 @@ function CheckoutPickupPageInner() {
   const leafletRef = useRef<typeof import("leaflet") | null>(null);
   const mapRef = useRef<import("leaflet").Map | null>(null);
   const markerRef = useRef<import("leaflet").Marker | null>(null);
-  const pvzLayerRef = useRef<import("leaflet").LayerGroup | null>(null);
+  const pvzClusterRef = useRef<import("leaflet").LayerGroup | null>(null);
   const pvzMarkersRef = useRef<Map<string, import("leaflet").Marker>>(
     new Map()
   );
+  const pvzProviderByIdRef = useRef<Map<string, PvzProvider>>(new Map());
+  const pvzPointsRef = useRef<PvzPoint[] | null>(null);
+  const pvzPointByIdRef = useRef<Map<string, PvzPoint> | null>(null);
+  const prevSelectedPvzIdRef = useRef<string | null>(null);
   const userMarkerRef = useRef<
     import("leaflet").CircleMarker | import("leaflet").Marker | null
   >(null);
@@ -196,6 +216,22 @@ function CheckoutPickupPageInner() {
   const userEverCenteredRef = useRef(false);
   const initSeqRef = useRef(0);
   const iconFixedRef = useRef(false);
+
+  const ensurePvzPoints = useCallback((): PvzPoint[] => {
+    if (!pvzPointsRef.current) {
+      pvzPointsRef.current = generateTestPvzPoints(500);
+    }
+    return pvzPointsRef.current;
+  }, []);
+
+  const ensurePvzIndex = useCallback((): Map<string, PvzPoint> => {
+    if (!pvzPointByIdRef.current) {
+      const index = new Map<string, PvzPoint>();
+      for (const p of ensurePvzPoints()) index.set(p.id, p);
+      pvzPointByIdRef.current = index;
+    }
+    return pvzPointByIdRef.current;
+  }, [ensurePvzPoints]);
 
   const initialStep = useMemo<"search" | "map" | "list">(() => {
     const step = new URLSearchParams(searchParamsKey).get("step");
@@ -211,10 +247,6 @@ function CheckoutPickupPageInner() {
 
   const [pvzQuery, setPvzQuery] = useState("");
 
-  const [mapInitTick, setMapInitTick] = useState(0);
-  const [mapViewTick, setMapViewTick] = useState(0);
-  const mapBumpRafRef = useRef<number | null>(null);
-
   const selectedPvzId = useMemo(() => {
     const id = new URLSearchParams(searchParamsKey).get("pvzId");
     return id && id.trim() ? id : null;
@@ -222,6 +254,8 @@ function CheckoutPickupPageInner() {
 
   const [isUserTracking, setIsUserTracking] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<LatLon | null>(null);
+  const lastUserLocationRef = useRef<LatLon | null>(null);
 
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<
@@ -230,7 +264,12 @@ function CheckoutPickupPageInner() {
 
   useEffect(() => {
     const q = query.trim();
-    if (!q) return;
+    if (!q) {
+      setSuggestions([]);
+      return;
+    }
+
+    const ctrl = new AbortController();
 
     const t = window.setTimeout(async () => {
       try {
@@ -238,6 +277,7 @@ function CheckoutPickupPageInner() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ query: q, count: 10 }),
+          signal: ctrl.signal,
         });
 
         if (!res.ok) {
@@ -249,11 +289,15 @@ function CheckoutPickupPageInner() {
         const s = (data as DaDataSuggestAddressResponse)?.suggestions;
         setSuggestions(Array.isArray(s) ? s : []);
       } catch {
+        if (ctrl.signal.aborted) return;
         setSuggestions([]);
       }
     }, 250);
 
-    return () => window.clearTimeout(t);
+    return () => {
+      window.clearTimeout(t);
+      ctrl.abort();
+    };
   }, [query]);
 
   const items = useMemo((): SuggestItem[] => {
@@ -263,7 +307,6 @@ function CheckoutPickupPageInner() {
     return suggestions.map((x, index) => {
       const d = x.data;
       const subtitle =
-        d?.region_with_type ||
         d?.city_with_type ||
         d?.settlement_with_type ||
         d?.area_with_type ||
@@ -302,14 +345,26 @@ function CheckoutPickupPageInner() {
   };
 
   const filteredPvz = useMemo(() => {
-    const q = pvzQuery.trim().toLowerCase();
-    if (!q) return TEST_PVZ_POINTS;
+    if (step !== "list") return [] as PvzPoint[];
 
-    return TEST_PVZ_POINTS.filter((x) => {
-      const hay = `${x.provider} ${x.address}`.toLowerCase();
-      return hay.includes(q);
+    const allPoints = ensurePvzPoints();
+    const q = pvzQuery.trim().toLowerCase();
+    const base = !q
+      ? allPoints
+      : allPoints.filter((x) => {
+          const hay = `${x.provider} ${x.address}`.toLowerCase();
+          return hay.includes(q);
+        });
+
+    if (!userLocation) return base;
+
+    // Show nearest PVZ first once user's location is known.
+    return [...base].sort((a, b) => {
+      const da = distanceKm(userLocation, { lat: a.lat, lon: a.lon });
+      const db = distanceKm(userLocation, { lat: b.lat, lon: b.lon });
+      return da - db;
     });
-  }, [pvzQuery]);
+  }, [ensurePvzPoints, pvzQuery, step, userLocation]);
 
   const stopUserTracking = useCallback(() => {
     if (geoWatchIdRef.current != null) {
@@ -336,6 +391,8 @@ function CheckoutPickupPageInner() {
     userAccuracyCircleRef.current = null;
 
     userEverCenteredRef.current = false;
+    lastUserLocationRef.current = null;
+    setUserLocation(null);
     setIsUserTracking(false);
   }, []);
 
@@ -381,6 +438,15 @@ function CheckoutPickupPageInner() {
         const accuracy = Math.max(0, pos.coords.accuracy || 0);
 
         const latlng = [lat, lon] as [number, number];
+
+        // Keep the latest user location for sorting PVZ list.
+        const prev = lastUserLocationRef.current;
+        const nextLoc = { lat, lon };
+        // GPS can be noisy; avoid re-sorting PVZ list on tiny jitter.
+        if (!prev || distanceKm(prev, nextLoc) > 0.03) {
+          lastUserLocationRef.current = nextLoc;
+          setUserLocation(nextLoc);
+        }
 
         try {
           if (!userMarkerRef.current) {
@@ -453,12 +519,14 @@ function CheckoutPickupPageInner() {
     markerRef.current = null;
 
     try {
-      pvzLayerRef.current?.remove();
+      pvzClusterRef.current?.remove();
     } catch {
       // ignore
     }
-    pvzLayerRef.current = null;
+    pvzClusterRef.current = null;
     pvzMarkersRef.current.clear();
+    pvzProviderByIdRef.current.clear();
+    prevSelectedPvzIdRef.current = null;
 
     try {
       mapRef.current?.remove();
@@ -468,11 +536,60 @@ function CheckoutPickupPageInner() {
     mapRef.current = null;
   }, [stopUserTracking]);
 
+  const getPvzMarkerIcon = useCallback(
+    (
+      L: typeof import("leaflet"),
+      provider: PvzProvider,
+      isSelected: boolean
+    ) => {
+      const colorByProvider: Record<PvzProvider, string> = {
+        "Яндекс Доставка": "#111111",
+        CDEK: "#16A34A",
+        Boxberry: "#F97316",
+        "Почта России": "#2563EB",
+      };
+
+      const color = colorByProvider[provider] ?? "#111111";
+      const size = isSelected ? 18 : 14;
+      const ring = isSelected ? 4 : 2;
+
+      return L.divIcon({
+        className: "",
+        iconSize: [size + ring, size + ring],
+        iconAnchor: [(size + ring) / 2, (size + ring) / 2],
+        html: `
+          <div style="
+            width:${size + ring}px;
+            height:${size + ring}px;
+            border-radius:9999px;
+            background: rgba(255,255,255,0.9);
+            border:${ring}px solid ${color};
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+          ">
+            <div style="
+              width:${size}px;
+              height:${size}px;
+              border-radius:9999px;
+              background:${color};
+            "></div>
+          </div>
+        `,
+      });
+    },
+    []
+  );
+
   useEffect(() => {
     if (step !== "map") {
       destroyMap();
       return;
     }
+
+    // If a map already exists, do not redo heavy init / imports.
+    if (mapRef.current) return;
 
     const seq = ++initSeqRef.current;
     let cancelled = false;
@@ -482,6 +599,9 @@ function CheckoutPickupPageInner() {
       const L: typeof import("leaflet") =
         (leafletModule as unknown as { default?: typeof import("leaflet") })
           .default ?? (leafletModule as unknown as typeof import("leaflet"));
+
+      // Marker clustering plugin patches Leaflet with markerClusterGroup().
+      await import("leaflet.markercluster");
 
       if (cancelled || initSeqRef.current !== seq) return;
 
@@ -533,8 +653,9 @@ function CheckoutPickupPageInner() {
       const params = new URLSearchParams(searchParamsKey);
 
       const selectedFromUrl = params.get("pvzId");
+      const pvzIndex = ensurePvzIndex();
       const selectedPoint = selectedFromUrl
-        ? TEST_PVZ_POINTS.find((p) => p.id === selectedFromUrl)
+        ? pvzIndex.get(selectedFromUrl)
         : undefined;
 
       const urlLat = Number(params.get("lat"));
@@ -549,11 +670,14 @@ function CheckoutPickupPageInner() {
       const markerLat = selectedPoint ? null : urlHasCenter ? urlLat : null;
       const markerLon = selectedPoint ? null : urlHasCenter ? urlLon : null;
       const hasMarker = markerLat != null && markerLon != null;
+      const hasSelectedPvz = Boolean(selectedPoint);
+
+      const initialZoom = hasSelectedPvz ? 14 : hasMarker ? 12 : 10;
 
       const map = L.map(el, {
         zoomControl: false,
         attributionControl: false,
-      }).setView([centerLat, centerLon], hasMarker ? 12 : 10);
+      }).setView([centerLat, centerLon], initialZoom);
 
       mapRef.current = map;
 
@@ -561,24 +685,109 @@ function CheckoutPickupPageInner() {
         maxZoom: 19,
       }).addTo(map);
 
-      pvzLayerRef.current = L.layerGroup().addTo(map);
-      setMapInitTick((x) => x + 1);
+      const markerClusterGroupFactory = (
+        L as unknown as {
+          markerClusterGroup?: (
+            options?: unknown
+          ) => import("leaflet").LayerGroup;
+        }
+      ).markerClusterGroup;
 
-      const bump = () => {
-        if (mapBumpRafRef.current != null) return;
-        mapBumpRafRef.current = window.requestAnimationFrame(() => {
-          mapBumpRafRef.current = null;
-          setMapViewTick((x) => x + 1);
+      const clusterGroup = markerClusterGroupFactory
+        ? markerClusterGroupFactory({
+            showCoverageOnHover: false,
+            spiderfyOnMaxZoom: true,
+            zoomToBoundsOnClick: true,
+            maxClusterRadius: 52,
+            chunkedLoading: true,
+            iconCreateFunction: (cluster: unknown) => {
+              const c = cluster as { getChildCount: () => number };
+              const count = c.getChildCount();
+              const size = count < 10 ? 34 : count < 100 ? 40 : 46;
+
+              return L.divIcon({
+                className: "",
+                iconSize: [size, size],
+                iconAnchor: [size / 2, size / 2],
+                html: `<div style="
+                  width:${size}px;
+                  height:${size}px;
+                  border-radius:9999px;
+                  background: rgba(17,17,17,0.92);
+                  color: #fff;
+                  font-weight: 700;
+                  font-size: 14px;
+                  display:flex;
+                  align-items:center;
+                  justify-content:center;
+                  box-shadow: 0 10px 24px rgba(0,0,0,0.20);
+                  border: 2px solid rgba(255,255,255,0.8);
+                ">${count}</div>`,
+              });
+            },
+          })
+        : L.layerGroup();
+
+      pvzClusterRef.current = clusterGroup;
+      clusterGroup.addTo(map);
+
+      const allPoints = ensurePvzPoints();
+      const markers: import("leaflet").Marker[] = [];
+
+      // Create PVZ markers once; clustering will handle zoom-out aggregation.
+      for (const point of allPoints) {
+        pvzProviderByIdRef.current.set(point.id, point.provider);
+        const isSelected = selectedFromUrl === point.id;
+
+        const marker = L.marker([point.lat, point.lon], {
+          icon: getPvzMarkerIcon(L, point.provider, isSelected),
+          keyboard: false,
+          title: `${point.provider} — ${point.address}`,
+        }).on("click", () => {
+          selectPvzOnMap(point.id);
         });
+
+        marker.bindPopup(
+          `<div style="min-width: 200px">
+            <div style="font-weight:700; font-size:14px; margin-bottom:4px">${point.provider}</div>
+            <div style="font-size:12px; color:#555">${point.address}</div>
+            <div style="font-size:12px; margin-top:8px">${point.deliveryText}</div>
+            <div style="font-size:12px; margin-top:4px">${point.priceText}</div>
+          </div>`,
+          { closeButton: true }
+        );
+
+        pvzMarkersRef.current.set(point.id, marker);
+
+        markers.push(marker);
+      }
+
+      const clusterAny = clusterGroup as unknown as {
+        addLayers?: (xs: unknown[]) => void;
+        addLayer?: (x: unknown) => void;
       };
 
-      map.on("moveend", bump);
-      map.on("zoomend", bump);
-      // Kick the first render asynchronously to avoid update-depth loops.
-      window.setTimeout(bump, 0);
+      if (clusterAny.addLayers) {
+        clusterAny.addLayers(markers as unknown as unknown[]);
+      } else if (clusterAny.addLayer) {
+        for (const m of markers) clusterAny.addLayer(m);
+      } else {
+        for (const m of markers) m.addTo(clusterGroup);
+      }
 
       if (hasMarker) {
         markerRef.current = L.marker([markerLat, markerLon]).addTo(map);
+      }
+
+      if (hasSelectedPvz && selectedFromUrl) {
+        const selectedMarker = pvzMarkersRef.current.get(selectedFromUrl);
+        if (selectedMarker) {
+          try {
+            selectedMarker.openPopup();
+          } catch {
+            // ignore
+          }
+        }
       }
     };
 
@@ -587,132 +796,48 @@ function CheckoutPickupPageInner() {
     return () => {
       cancelled = true;
     };
-  }, [step, searchParamsKey, destroyMap]);
-
-  const getPvzMarkerIcon = useCallback(
-    (
-      L: typeof import("leaflet"),
-      provider: PvzProvider,
-      isSelected: boolean
-    ) => {
-      const colorByProvider: Record<PvzProvider, string> = {
-        "Яндекс Доставка": "#111111",
-        CDEK: "#16A34A",
-        Boxberry: "#F97316",
-        "Почта России": "#2563EB",
-      };
-
-      const color = colorByProvider[provider] ?? "#111111";
-      const size = isSelected ? 18 : 14;
-      const ring = isSelected ? 4 : 2;
-
-      return L.divIcon({
-        className: "",
-        iconSize: [size + ring, size + ring],
-        iconAnchor: [(size + ring) / 2, (size + ring) / 2],
-        html: `
-          <div style="
-            width:${size + ring}px;
-            height:${size + ring}px;
-            border-radius:9999px;
-            background: rgba(255,255,255,0.9);
-            border:${ring}px solid ${color};
-            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-          ">
-            <div style="
-              width:${size}px;
-              height:${size}px;
-              border-radius:9999px;
-              background:${color};
-            "></div>
-          </div>
-        `,
-      });
-    },
-    []
-  );
-
-  useEffect(() => {
-    if (step !== "map") return;
-
-    const L = leafletRef.current;
-    const map = mapRef.current;
-    const layer = pvzLayerRef.current;
-    if (!L || !map || !layer) return;
-
-    // Only render markers within current map bounds to keep performance OK with 1000+ points.
-    let bounds = map.getBounds();
-    try {
-      bounds = bounds.pad(0.25);
-    } catch {
-      // ignore
-    }
-
-    const pointsInView = TEST_PVZ_POINTS.filter((p) =>
-      bounds.contains([p.lat, p.lon])
-    );
-    const nextIds = new Set(pointsInView.map((p) => p.id));
-
-    // Remove markers that left the viewport.
-    for (const [id, marker] of pvzMarkersRef.current.entries()) {
-      if (nextIds.has(id)) continue;
-      try {
-        marker.remove();
-      } catch {
-        // ignore
-      }
-      pvzMarkersRef.current.delete(id);
-    }
-
-    // Add/update visible markers.
-    for (const point of pointsInView) {
-      const isSelected = selectedPvzId === point.id;
-      const existing = pvzMarkersRef.current.get(point.id);
-
-      if (existing) {
-        try {
-          existing.setIcon(getPvzMarkerIcon(L, point.provider, isSelected));
-        } catch {
-          // ignore
-        }
-        continue;
-      }
-
-      const marker = L.marker([point.lat, point.lon], {
-        icon: getPvzMarkerIcon(L, point.provider, isSelected),
-        keyboard: false,
-        title: `${point.provider} — ${point.address}`,
-      })
-        .addTo(layer)
-        .on("click", () => {
-          selectPvzOnMap(point.id);
-        });
-
-      marker.bindPopup(
-        `<div style="min-width: 200px">
-          <div style="font-weight:700; font-size:14px; margin-bottom:4px">${point.provider}</div>
-          <div style="font-size:12px; color:#555">${point.address}</div>
-          <div style="font-size:12px; margin-top:8px">${point.deliveryText}</div>
-          <div style="font-size:12px; margin-top:4px">${point.priceText}</div>
-        </div>`,
-        { closeButton: true }
-      );
-
-      pvzMarkersRef.current.set(point.id, marker);
-    }
-
-    // Don't auto-open popups on pan/zoom; open only on explicit user click.
   }, [
     step,
-    mapInitTick,
-    mapViewTick,
-    selectedPvzId,
+    searchParamsKey,
+    destroyMap,
+    ensurePvzIndex,
+    ensurePvzPoints,
     getPvzMarkerIcon,
     selectPvzOnMap,
   ]);
+
+  useEffect(() => {
+    if (step !== "map") return;
+    const L = leafletRef.current;
+    if (!L) return;
+
+    const prev = prevSelectedPvzIdRef.current;
+    if (prev && prev !== selectedPvzId) {
+      const prevMarker = pvzMarkersRef.current.get(prev);
+      const prevProvider = pvzProviderByIdRef.current.get(prev);
+      if (prevMarker && prevProvider) {
+        try {
+          prevMarker.setIcon(getPvzMarkerIcon(L, prevProvider, false));
+        } catch {
+          // ignore
+        }
+      }
+    }
+
+    if (selectedPvzId) {
+      const marker = pvzMarkersRef.current.get(selectedPvzId);
+      const provider = pvzProviderByIdRef.current.get(selectedPvzId);
+      if (marker && provider) {
+        try {
+          marker.setIcon(getPvzMarkerIcon(L, provider, true));
+        } catch {
+          // ignore
+        }
+      }
+    }
+
+    prevSelectedPvzIdRef.current = selectedPvzId;
+  }, [step, selectedPvzId, getPvzMarkerIcon]);
 
   useEffect(() => {
     if (step !== "map") return;
@@ -726,8 +851,9 @@ function CheckoutPickupPageInner() {
     const params = new URLSearchParams(searchParamsKey);
 
     const selectedFromUrl = params.get("pvzId");
+    const pvzIndex = ensurePvzIndex();
     const selectedPoint = selectedFromUrl
-      ? TEST_PVZ_POINTS.find((p) => p.id === selectedFromUrl)
+      ? pvzIndex.get(selectedFromUrl)
       : undefined;
 
     const urlLat = Number(params.get("lat"));
@@ -740,17 +866,20 @@ function CheckoutPickupPageInner() {
     const markerLat = selectedPoint ? null : urlHasCenter ? urlLat : null;
     const markerLon = selectedPoint ? null : urlHasCenter ? urlLon : null;
     const hasMarker = markerLat != null && markerLon != null;
+    const hasSelectedPvz = Boolean(selectedPoint);
 
-    const nextZoom = hasMarker ? 12 : 10;
+    // UX: never auto-zoom-out, only zoom-in when needed.
+    const desiredZoom = hasSelectedPvz ? 14 : hasMarker ? 12 : 10;
     const currentCenter = map.getCenter();
     const currentZoom = map.getZoom();
     const eps = 1e-6;
     const needsMove =
       Math.abs(currentCenter.lat - centerLat) > eps ||
       Math.abs(currentCenter.lng - centerLon) > eps;
-    const needsZoom = currentZoom !== nextZoom;
+    const nextZoom = Math.max(currentZoom, desiredZoom);
+    const needsZoomIn = currentZoom < nextZoom;
 
-    if (needsMove || needsZoom) {
+    if (needsMove || needsZoomIn) {
       map.setView([centerLat, centerLon], nextZoom, { animate: true });
     }
 
@@ -764,7 +893,18 @@ function CheckoutPickupPageInner() {
     if (hasMarker) {
       markerRef.current = L.marker([markerLat, markerLon]).addTo(map);
     }
-  }, [step, searchParamsKey, isUserTracking]);
+
+    if (hasSelectedPvz && selectedFromUrl) {
+      const selectedMarker = pvzMarkersRef.current.get(selectedFromUrl);
+      if (selectedMarker) {
+        try {
+          selectedMarker.openPopup();
+        } catch {
+          // ignore
+        }
+      }
+    }
+  }, [ensurePvzIndex, step, searchParamsKey, isUserTracking]);
 
   useEffect(() => {
     if (step !== "map") {
@@ -979,32 +1119,38 @@ function CheckoutPickupPageInner() {
       </div>
 
       <div className="mt-2">
-        {filteredPvz.map((p, idx) => (
-          <button
-            type="button"
-            key={p.id}
-            onClick={() => {
-              selectPvzOnMap(p.id);
-            }}
-            className={
-              "w-full text-left px-4 py-4 " +
-              (idx === filteredPvz.length - 1
-                ? ""
-                : "border-b border-[#E5E5E5]")
-            }
-          >
-            <div className="min-w-0">
-              <div className="text-[22px] font-bold text-black leading-tight">
-                {p.provider}
+        {filteredPvz.map((p, idx) => {
+          const isActive = selectedPvzId === p.id;
+
+          return (
+            <button
+              type="button"
+              key={p.id}
+              aria-pressed={isActive}
+              onClick={() => {
+                selectPvzOnMap(p.id);
+              }}
+              className={
+                "w-full text-left px-4 py-4 transition-colors " +
+                (isActive ? "bg-[#F4F3F1]" : "bg-white") +
+                (idx === filteredPvz.length - 1
+                  ? ""
+                  : " border-b border-[#E5E5E5]")
+              }
+            >
+              <div className="min-w-0">
+                <div className="text-[22px] font-bold text-black leading-tight">
+                  {p.provider}
+                </div>
+                <div className="mt-1 text-[14px] text-black">{p.address}</div>
+                <div className="mt-2 text-[14px] text-black">
+                  {p.deliveryText}
+                </div>
+                <div className="mt-2 text-[14px] text-black">{p.priceText}</div>
               </div>
-              <div className="mt-1 text-[14px] text-black">{p.address}</div>
-              <div className="mt-2 text-[14px] text-black">
-                {p.deliveryText}
-              </div>
-              <div className="mt-2 text-[14px] text-black">{p.priceText}</div>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
 
         {filteredPvz.length === 0 ? (
           <div className="px-4 py-6 text-[14px] text-[#7E7E7E]">
