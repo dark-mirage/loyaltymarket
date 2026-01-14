@@ -1,5 +1,5 @@
-'use client'
-import React from 'react';
+"use client";
+import React from "react";
 
 interface BrandCardProps {
   id: number;
@@ -9,9 +9,15 @@ interface BrandCardProps {
   onClick?: (id: number) => void;
 }
 
-export default function BrandCard({ id, name, image, isFavorite, onClick }: BrandCardProps) {
+export default function BrandCard({
+  id,
+  name,
+  image,
+  isFavorite,
+  onClick,
+}: BrandCardProps) {
   return (
-    <li 
+    <li
       className="flex items-center justify-between w-full h-[60px] bg-[#F4F3F1] rounded-2xl px-[14px] py-[9px] mb-0 cursor-pointer hover:opacity-80 transition-opacity"
       onClick={() => onClick?.(id)}
     >
@@ -20,8 +26,8 @@ export default function BrandCard({ id, name, image, isFavorite, onClick }: Bran
         {/* Изображение бренда */}
         {image && (
           <div className="w-[40.89px] h-[41px] rounded-[13px] overflow-hidden bg-white flex-shrink-0">
-            <img 
-              src={image} 
+            <img
+              src={image}
               alt={name}
               className="w-full h-full object-cover"
             />
@@ -40,12 +46,11 @@ export default function BrandCard({ id, name, image, isFavorite, onClick }: Bran
       </div>
 
       {/* Стрелка справа */}
-      <img 
-        src="/icons/global/Wrap.svg" 
+      <img
+        src="/icons/global/Wrap.svg"
         alt="arrow"
         className="w-[5.29px] h-[9.25px] flex-shrink-0"
       />
     </li>
   );
 }
-

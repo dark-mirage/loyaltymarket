@@ -67,7 +67,7 @@ const BottomNavigation: React.FC = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t">
-      <div className="flex py-2 pb-[40px] justify-center">
+      <div className="flex py-2 justify-center">
         <Link href="/">
           <button className="flex flex-col items-center py-1 mr-[40px]">
             <img

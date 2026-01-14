@@ -4,6 +4,7 @@ import Script from "next/script";
 
 import { cn } from "./shared";
 import WebViewErrorAlert from "./components/WebViewErrorAlert";
+import TelegramInit from "./components/TelegramInit";
 
 // const inter = Inter({ subsets: ['latin', 'cyrillic', 'cyrillic-ext'], display: 'swap', variable: '--font-inter' });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
           "font-[Inter,sans-serif] text-black! box-border"
         )}
       >
+        <TelegramInit />
         {children}
         <WebViewErrorAlert />
       </body>

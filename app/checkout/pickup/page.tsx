@@ -12,6 +12,13 @@ import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import Button from "@/components/ui/Button";
+import {
+  CalendarDays,
+  Clock,
+  CreditCard,
+  Hourglass,
+  MapPin,
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 type DaDataSuggestAddressResponse = {
@@ -256,12 +263,21 @@ function CheckoutPickupPageInner() {
     return id && id.trim() ? id : null;
   }, [searchParamsKey]);
 
-  useEffect(() => {
-    if (!selectedPvzId) return;
-    const selectedPoint = ensurePvzIndex().get(selectedPvzId);
-    if (!selectedPoint) return;
-    setActiveProvider(selectedPoint.provider);
+  const selectedPvz = useMemo(() => {
+    if (!selectedPvzId) return null;
+    return ensurePvzIndex().get(selectedPvzId) ?? null;
   }, [ensurePvzIndex, selectedPvzId]);
+
+  const [isPvzModalOpen, setIsPvzModalOpen] = useState<boolean>(() => {
+    const initialId = new URLSearchParams(searchParamsKey).get("pvzId");
+    return Boolean(initialId && initialId.trim());
+  });
+
+  useEffect(() => {
+    if (step === "map" && selectedPvzId) {
+      setIsPvzModalOpen(true);
+    }
+  }, [step, selectedPvzId]);
 
   const [isUserTracking, setIsUserTracking] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
@@ -414,6 +430,7 @@ function CheckoutPickupPageInner() {
 
   const selectPvzOnMap = useCallback(
     (pvzId: string) => {
+      setIsPvzModalOpen(true);
       stopUserTracking();
       setStep("map");
       replacePickupUrl((params) => {
@@ -458,11 +475,6 @@ function CheckoutPickupPageInner() {
 
       const tryOpen = () => {
         panToMarker();
-        try {
-          marker.openPopup();
-        } catch {
-          // ignore
-        }
       };
 
       if (cluster?.zoomToShowLayer) {
@@ -902,14 +914,6 @@ function CheckoutPickupPageInner() {
         pvzProviderByIdRef.current.set(point.id, point.provider);
         const isSelected = selectedFromUrl === point.id;
 
-        const priceShort = (point.priceText || "")
-          .replace(/^Стоимость\s*[—-]\s*/i, "")
-          .trim();
-        const deliveryShort = (point.deliveryText || "")
-          .replace(/^Доставка\s*/i, "")
-          .trim();
-        const metaText = [priceShort, deliveryShort].filter(Boolean).join(", ");
-
         const marker = L.marker([point.lat, point.lon], {
           icon: getPvzMarkerIcon(L, point.provider, isSelected),
           keyboard: false,
@@ -917,24 +921,6 @@ function CheckoutPickupPageInner() {
         }).on("click", () => {
           selectPvzOnMap(point.id);
         });
-
-        marker.bindPopup(
-          `
-            <div class="pvzPopupCard" role="dialog" aria-label="${point.provider}">
-              <div class="pvzPopupText">
-                <div class="pvzPopupTitle">${point.provider}</div>
-                <div class="pvzPopupMeta">${metaText}</div>
-              </div>
-            </div>
-          `,
-          {
-            closeButton: false,
-            autoPan: true,
-            autoPanPadding: [16, 16],
-            className: "pvz-popup",
-            offset: [0, -28],
-          }
-        );
 
         pvzMarkersRef.current.set(point.id, marker);
 
@@ -1030,6 +1016,10 @@ function CheckoutPickupPageInner() {
     const urlLat = Number(params.get("lat"));
     const urlLon = Number(params.get("lon"));
     const urlHasCenter = Number.isFinite(urlLat) && Number.isFinite(urlLon);
+
+    // When closing the PVZ modal we remove `pvzId`. In that case we must not
+    // re-center the map to a default location; keep the current view.
+    if (!selectedPoint && !urlHasCenter) return;
 
     const centerLat = selectedPoint?.lat ?? (urlHasCenter ? urlLat : 55.751244);
     const centerLon = selectedPoint?.lon ?? (urlHasCenter ? urlLon : 37.618423);
@@ -1222,18 +1212,136 @@ function CheckoutPickupPageInner() {
           </div>
         </div>
 
-        <div className="fixed z-1000 bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-4 py-4">
-          <div className="mb-3">{ProviderChips}</div>
-          <Button
-            type="button"
-            variant="primary"
-            size="lg"
-            className="w-full rounded-2xl"
-            onClick={() => setStepAndUrl("search")}
+        {selectedPvz && isPvzModalOpen ? (
+          <div
+            className="fixed z-2000 bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md"
+            style={{ zIndex: 2000 }}
           >
-            Поиск города
-          </Button>
-        </div>
+            <div className="px-0 pb-0">
+              <div className="bg-white rounded-t-[28px] border border-[#E5E5E5] border-b-0 shadow-[0_-18px_44px_rgba(0,0,0,0.18)] overflow-hidden">
+                <div className="pt-3 pb-1">
+                  <div className="mx-auto w-12 h-1.5 rounded-full bg-[#E5E5E5]" />
+                </div>
+
+                <div className="px-4 pb-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="text-[22px] font-bold text-black leading-tight">
+                      {selectedPvz.provider}
+                    </div>
+                    <button
+                      type="button"
+                      aria-label="Закрыть"
+                      onClick={() => setIsPvzModalOpen(false)}
+                      className="w-6 h-6 rounded-full grid place-items-center bg-white border border-[#E5E5E5]"
+                    >
+                      <img
+                        src="/icons/global/xicon.svg"
+                        alt=""
+                        className="w-3 h-3 opacity-80"
+                      />
+                    </button>
+                  </div>
+
+                  <div className="mt-4 space-y-3">
+                    <div className="flex items-start gap-3 text-black">
+                      <MapPin className="w-5 h-5 mt-0.5" />
+                      <div className="text-[14px]">{selectedPvz.address}</div>
+                    </div>
+
+                    <div className="flex items-start gap-3 text-black">
+                      <CalendarDays className="w-5 h-5 mt-0.5" />
+                      <div className="text-[14px]">
+                        {selectedPvz.deliveryText}
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 text-black">
+                      <Clock className="w-5 h-5 mt-0.5" />
+                      <div className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 text-[14px] w-full">
+                        <div>Понедельник</div>
+                        <div className="justify-self-end text-[#7E7E7E] tabular-nums">
+                          08:30–20:00
+                        </div>
+
+                        <div>Вторник</div>
+                        <div className="justify-self-end text-[#7E7E7E] tabular-nums">
+                          08:30–20:00
+                        </div>
+
+                        <div>Среда</div>
+                        <div className="justify-self-end text-[#7E7E7E] tabular-nums">
+                          08:30–20:00
+                        </div>
+
+                        <div>Четверг</div>
+                        <div className="justify-self-end text-[#7E7E7E] tabular-nums">
+                          08:30–20:00
+                        </div>
+
+                        <div>Пятница</div>
+                        <div className="justify-self-end text-[#7E7E7E] tabular-nums">
+                          08:30–20:00
+                        </div>
+
+                        <div>Суббота</div>
+                        <div className="justify-self-end text-[#7E7E7E] tabular-nums">
+                          08:30–20:00
+                        </div>
+
+                        <div>Воскресенье</div>
+                        <div className="justify-self-end text-[#7E7E7E] tabular-nums">
+                          08:30–20:00
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 text-black">
+                      <Hourglass className="w-5 h-5 mt-0.5" />
+                      <div className="text-[14px]">Срок хранения — 7 дней</div>
+                    </div>
+
+                    <div className="flex items-start gap-3 text-black">
+                      <CreditCard className="w-5 h-5 mt-0.5" />
+                      <div className="text-[14px]">{selectedPvz.priceText}</div>
+                    </div>
+                  </div>
+
+                  <div className="mt-5">
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="lg"
+                      className="w-full rounded-2xl"
+                      onClick={() => {
+                        if (!selectedPvz) return;
+                        const params = new URLSearchParams();
+                        params.set("pickupPvzId", selectedPvz.id);
+                        params.set("pickupProvider", selectedPvz.provider);
+                        params.set("pickupAddress", selectedPvz.address);
+                        router.push(`/checkout?${params.toString()}`);
+                      }}
+                    >
+                      Доставить сюда
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="fixed z-1000 bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-4 py-4">
+            <div className="mb-3">{ProviderChips}</div>
+            <Button
+              type="button"
+              variant="primary"
+              size="lg"
+              className="w-full rounded-2xl"
+              onClick={() => setStepAndUrl("search")}
+            >
+              Поиск города
+            </Button>
+          </div>
+        )}
       </div>
     );
   }

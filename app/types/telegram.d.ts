@@ -20,7 +20,7 @@ export interface TelegramWebApp {
   };
   version: string;
   platform: string;
-  colorScheme: 'light' | 'dark';
+  colorScheme: "light" | "dark";
   themeParams: {
     bg_color?: string;
     text_color?: string;
@@ -33,6 +33,18 @@ export interface TelegramWebApp {
   isExpanded: boolean;
   viewportHeight: number;
   viewportStableHeight: number;
+  safeAreaInset?: {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  };
+  contentSafeAreaInset?: {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  };
   headerColor: string;
   backgroundColor: string;
   isClosingConfirmationEnabled: boolean;
@@ -68,39 +80,75 @@ export interface TelegramWebApp {
     }) => void;
   };
   HapticFeedback: {
-    impactOccurred: (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft') => void;
-    notificationOccurred: (type: 'error' | 'success' | 'warning') => void;
+    impactOccurred: (
+      style: "light" | "medium" | "heavy" | "rigid" | "soft"
+    ) => void;
+    notificationOccurred: (type: "error" | "success" | "warning") => void;
     selectionChanged: () => void;
   };
   CloudStorage: {
-    setItem: (key: string, value: string, callback?: (error: Error | null, success: boolean) => void) => void;
-    getItem: (key: string, callback: (error: Error | null, value: string | null) => void) => void;
-    getItems: (keys: string[], callback: (error: Error | null, values: Record<string, string>) => void) => void;
-    removeItem: (key: string, callback?: (error: Error | null, success: boolean) => void) => void;
-    removeItems: (keys: string[], callback?: (error: Error | null, success: boolean) => void) => void;
+    setItem: (
+      key: string,
+      value: string,
+      callback?: (error: Error | null, success: boolean) => void
+    ) => void;
+    getItem: (
+      key: string,
+      callback: (error: Error | null, value: string | null) => void
+    ) => void;
+    getItems: (
+      keys: string[],
+      callback: (error: Error | null, values: Record<string, string>) => void
+    ) => void;
+    removeItem: (
+      key: string,
+      callback?: (error: Error | null, success: boolean) => void
+    ) => void;
+    removeItems: (
+      keys: string[],
+      callback?: (error: Error | null, success: boolean) => void
+    ) => void;
     getKeys: (callback: (error: Error | null, keys: string[]) => void) => void;
   };
   ready: () => void;
   expand: () => void;
+  /**
+   * Best-effort fullscreen request.
+   * Availability depends on Telegram client version/platform.
+   */
+  requestFullscreen?: () => void;
+  /**
+   * Some clients expose this legacy-ish naming.
+   */
+  requestFullScreen?: () => void;
   close: () => void;
   sendData: (data: string) => void;
   openLink: (url: string, options?: { try_instant_view?: boolean }) => void;
   openTelegramLink: (url: string) => void;
   openInvoice: (url: string, callback?: (status: string) => void) => void;
-  showPopup: (params: {
-    title?: string;
-    message: string;
-    buttons?: Array<{
-      id?: string;
-      type?: 'default' | 'ok' | 'close' | 'cancel' | 'destructive';
-      text: string;
-    }>;
-  }, callback?: (id: string) => void) => void;
+  showPopup: (
+    params: {
+      title?: string;
+      message: string;
+      buttons?: Array<{
+        id?: string;
+        type?: "default" | "ok" | "close" | "cancel" | "destructive";
+        text: string;
+      }>;
+    },
+    callback?: (id: string) => void
+  ) => void;
   showAlert: (message: string, callback?: () => void) => void;
-  showConfirm: (message: string, callback?: (confirmed: boolean) => void) => void;
-  showScanQrPopup: (params: {
-    text?: string;
-  }, callback?: (data: string) => void) => void;
+  showConfirm: (
+    message: string,
+    callback?: (confirmed: boolean) => void
+  ) => void;
+  showScanQrPopup: (
+    params: {
+      text?: string;
+    },
+    callback?: (data: string) => void
+  ) => void;
   closeScanQrPopup: () => void;
   readTextFromClipboard: (callback?: (text: string) => void) => void;
   requestWriteAccess: (callback?: (granted: boolean) => void) => void;
@@ -127,15 +175,10 @@ export interface TelegramUser {
 
 export interface TelegramChat {
   id: number;
-  type: 'group' | 'supergroup' | 'channel';
+  type: "group" | "supergroup" | "channel";
   title: string;
   username?: string;
   photo_url?: string;
 }
 
 export {};
-
-
-
-
-

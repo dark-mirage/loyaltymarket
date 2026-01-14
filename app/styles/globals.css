@@ -54,6 +54,28 @@
   --foreground: #171717;
   --items-background: #f4f3f1;
   font-family: "Inter", sans-serif; /* Добавляем здесь */
+
+  /* Telegram WebApp sizing (set by JS in TelegramInit). Fallbacks are safe outside Telegram. */
+  --tg-viewport-height: 100vh;
+  --tg-viewport-stable-height: 100vh;
+  --tg-is-expanded: 0;
+
+  /* Insets from Telegram API (if supported) */
+  --tg-safe-area-top: 0px;
+  --tg-safe-area-bottom: 0px;
+  --tg-safe-area-left: 0px;
+  --tg-safe-area-right: 0px;
+
+  --tg-content-safe-area-top: 0px;
+  --tg-content-safe-area-bottom: 0px;
+  --tg-content-safe-area-left: 0px;
+  --tg-content-safe-area-right: 0px;
+
+  /* iOS notch safe-area from WebKit */
+  --ios-safe-top: env(safe-area-inset-top, 0px);
+  --ios-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --ios-safe-left: env(safe-area-inset-left, 0px);
+  --ios-safe-right: env(safe-area-inset-right, 0px);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -66,6 +88,30 @@
 
 body {
   font-family: inherit;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+/*
+  Use Telegram-provided viewport height for the main page height.
+  This avoids the classic 100vh issues in mobile WebViews.
+*/
+body {
+  min-height: var(--tg-viewport-height);
+  /* Keep background consistent under Telegram header */
+  background: var(--background);
+}
+
+/* Optional utility for page wrappers if you use it in components */
+.tg-viewport {
+  min-height: var(--tg-viewport-height);
+  padding-top: max(var(--ios-safe-top), var(--tg-safe-area-top));
+  padding-bottom: max(var(--ios-safe-bottom), var(--tg-safe-area-bottom));
+  padding-left: max(var(--ios-safe-left), var(--tg-safe-area-left));
+  padding-right: max(var(--ios-safe-right), var(--tg-safe-area-right));
 }
 
 /* Остальные стили без изменений */
@@ -155,12 +201,12 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 12px;
+  padding: 8px 25px;
   border-radius: 9999px;
   background: #f4f3f1;
   border: 1px solid #e5e5e5;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
-  min-width: 210px;
+  min-width: max-content;
 }
 
 .pvzPopupIcon {
