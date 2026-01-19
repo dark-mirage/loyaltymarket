@@ -1,0 +1,128 @@
+.root {
+  padding-top: 4px;
+}
+
+.cardsOuter {
+  padding: 0 16px;
+}
+
+.cardsRow {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.cardItem {
+  flex: 0 0 auto;
+  width: 112px;
+}
+
+.blocks {
+  padding: 8px 16px 0;
+  display: flex;
+  gap: 8px;
+}
+
+.block {
+  flex: 1;
+  background: var(--items-background);
+  border-radius: 16px;
+  padding: 15px 17px 17px 13px;
+  min-width: 140px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.blockSecondary {
+  padding: 15px 17px 12px 15px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: -2px;
+}
+
+.subtitle {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.pointsSubtitle {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.16;
+  color: #111111;
+}
+
+.arrow {
+  align-self: flex-start;
+}
+
+.avatarsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.avatars {
+  display: flex;
+  margin-left: -1px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: rgba(244, 243, 241, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.avatar + .avatar {
+  margin-left: -10px;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.addBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.pointsValue {
+  display: flex;
+  align-items: center;
+  font-size: 25px;
+  font-weight: 600;
+}
+
+
+.tw1{
+  font-size: 0.75rem;
+}

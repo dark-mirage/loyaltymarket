@@ -1,0 +1,25 @@
+.outer {
+  padding: 16px 16px 8px;
+}
+
+.inner {
+  background: var(--items-background);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px 14px 14px;
+}
+
+.input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: none;
+  font-size: 16px;
+}
+
+.input::placeholder {
+  font-weight: 400;
+  color: #111111;
+}

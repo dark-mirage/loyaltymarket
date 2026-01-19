@@ -1,0 +1,33 @@
+.card {
+  width: 100%;
+  max-width: 112px;
+  height: 112px;
+  padding: 12px;
+  border-radius: 18px;
+  background: var(--items-background);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.05;
+  white-space: pre-line;
+  color: #111111;
+}
+
+.iconRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.icon {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  opacity: 0.8;
+}
