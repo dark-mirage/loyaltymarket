@@ -9,19 +9,20 @@ import cx from "clsx";
 
 export default function FriendsSection() {
   const cards = [
-    { title: "Условия\nвозврата", icon: "/icons/global/Wrap.svg" },
-    { title: "Гарантии\nи безопасность", icon: "/icons/global/security.png" },
-    { title: "POIZON —\nтолько\nоригинал", icon: "/icons/footer/Poizon.svg" },
-    { title: "Подарочные\nкарты", icon: "/icons/promo/box-colored.svg" },
-    { title: "Чат\nс поддержкой", icon: "/icons/profile/chat-icon.svg" },
+    { title: "Наша\n команда", icon: "/img/FriendsSection1.webp" },
+    { title: "Оплата\n и сплит", icon: "/img/FriendsSection2.webp" },
+    { title: "Доставка \nи отслеживание", icon: "/img/FriendsSection3.webp" },
+    { title: "Условия\nвозврата", icon: "/img/FriendsSection4.webp" },
+    { title: "Гарантии и безопасность", icon: "/img/FriendsSection5.webp" },
+    { title: "POIZON – только оригинал", icon: "/img/FriendsSection6.webp" },
+    { title: "Подарочные\nкарты", icon: "/img/FriendsSection7.webp" },
+    { title: "Чат\nс поддержкой", icon: "/img/FriendsSection8.webp" },
   ];
 
-  // Avatars referenced from public/icons/home-main
-  // Make sure files exist: public/icons/home-main/Ava-1.svg etc.
   const friends = [
-    { id: 1, avatar: "/icons/home-main/Ava-1.svg", name: "Friend1" },
-    { id: 2, avatar: "/icons/home-main/Ava-2.svg", name: "Friend2" },
-    { id: 3, avatar: "/icons/home-main/Ava-3.svg", name: "Friend3" },
+    { id: 1, avatar: "/img/Ava-1.webp", name: "Friend1" },
+    { id: 2, avatar: "/img/Ava-2.webp", name: "Friend2" },
+    { id: 3, avatar: "/img/Ava-3.webp", name: "Friend3" },
   ];
 
   const [imgErrorMap, setImgErrorMap] = useState({});
@@ -38,66 +39,62 @@ export default function FriendsSection() {
       </div>
 
       <div className={styles.blocks}>
-        <Link href="/invite-friends">
-          <div className={styles.block}>
-            <div className={styles.row}>
-              <div>
-                <span className={styles.title}>Зовите друзей</span>
-                <span className={styles.subtitle}>Дарим скидку 10%</span>
-              </div>
-              <img
-                className={styles.arrow}
-                src="/icons/global/arrow.svg"
-                alt="arrow"
-              />
+        <Link href="/invite-friends" className={styles.block}>
+          <div className={styles.row}>
+            <div>
+              <span className={styles.title}>Зовите друзей</span>
+              <span className={styles.subtitle}>Дарим скидку 10%</span>
             </div>
-            <div className={styles.avatarsRow}>
-              <div className={styles.avatars}>
-                {friends.map((friend) => (
-                  <div key={friend.id} className={styles.avatar}>
-                    {!imgErrorMap[friend.id] ? (
-                      <img
-                        src={friend.avatar}
-                        alt={friend.name}
-                        className={styles.avatarImg}
-                        onError={() =>
-                          setImgErrorMap((prev) => ({
-                            ...prev,
-                            [friend.id]: true,
-                          }))
-                        }
-                      />
-                    ) : (
-                      <span className={cx(styles.c1, styles.tw1)}>👤</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <button type="button" className={styles.addBtn}>
-                <img src="/icons/home-main/plus.svg" alt="plus" />
-              </button>
+            <img
+              className={styles.arrow}
+              src="/icons/global/arrow.svg"
+              alt="arrow"
+            />
+          </div>
+          <div className={styles.avatarsRow}>
+            <div className={styles.avatars}>
+              {friends.map((friend) => (
+                <div key={friend.id} className={styles.avatar}>
+                  {!imgErrorMap[friend.id] ? (
+                    <img
+                      src={friend.avatar}
+                      alt={friend.name}
+                      className={styles.avatarImg}
+                      onError={() =>
+                        setImgErrorMap((prev) => ({
+                          ...prev,
+                          [friend.id]: true,
+                        }))
+                      }
+                    />
+                  ) : (
+                    <span className={cx(styles.c1, styles.tw1)}>👤</span>
+                  )}
+                </div>
+              ))}
             </div>
+            <button type="button" className={styles.addBtn}>
+              +
+            </button>
           </div>
         </Link>
 
-        <div className={cn(styles.block, styles.blockSecondary)}>
-          <Link href="/promo">
-            <div className={styles.row}>
-              <div>
-                <span className={cn(styles.title)} style={{ marginBottom: 3 }}>
-                  Баллы
-                </span>
-                <span className={styles.pointsSubtitle}>1 балл = 1 ₽</span>
-              </div>
-              <img
-                className={styles.arrow}
-                src="/icons/global/arrow.svg"
-                alt="arrow"
-              />
+        <Link href="/promo" className={cn(styles.block, styles.blockSecondary)}>
+          <div className={styles.row}>
+            <div>
+              <span className={cn(styles.title)} style={{ marginBottom: 3 }}>
+                Баллы
+              </span>
+              <span className={styles.pointsSubtitle}>1 балл = 1 ₽</span>
             </div>
-            <div className={styles.pointsValue}>11</div>
-          </Link>
-        </div>
+            <img
+              className={styles.arrow}
+              src="/icons/global/arrow.svg"
+              alt="arrow"
+            />
+          </div>
+          <p className={styles.pointsValue}>11</p>
+        </Link>
       </div>
     </div>
   );

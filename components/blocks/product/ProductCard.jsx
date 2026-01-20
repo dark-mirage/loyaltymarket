@@ -80,10 +80,12 @@ export default function ProductCard({
       </div>
 
       {/* Кнопка даты доставки */}
-      {product.deliveryDate && (
+      {product.deliveryDate ? (
         <button type="button" className={styles.deliveryBtn}>
           <span className={styles.deliveryText}>{product.deliveryDate}</span>
         </button>
+      ) : (
+        <div className={styles.deliverySpacer} aria-hidden="true" />
       )}
     </div>
   );

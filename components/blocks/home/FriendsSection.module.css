@@ -3,7 +3,7 @@
 }
 
 .cardsOuter {
-  padding: 0 16px;
+  padding: 0 0px;
 }
 
 .cardsRow {
@@ -11,6 +11,8 @@
   gap: 8px;
   overflow-x: auto;
   padding-bottom: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .cardItem {
@@ -32,6 +34,7 @@
   min-width: 140px;
   text-decoration: none;
   color: inherit;
+  display: block;
 }
 
 .blockSecondary {
@@ -48,15 +51,15 @@
   display: block;
   font-size: 15px;
   font-weight: 600;
-  margin-bottom: -2px;
+  color: #000000;
 }
 
 .subtitle {
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
+  color: #000000;
 }
-
 .pointsSubtitle {
   display: block;
   font-size: 12px;
@@ -74,6 +77,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  margin-top: 12px;
 }
 
 .avatars {
@@ -104,8 +108,8 @@
 }
 
 .addBtn {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 9999px;
   background: #ffffff;
   border: 0;
@@ -113,16 +117,19 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  color: #2d2d2d;
+  vertical-align: middle;
+  font-size: 30px;
+  font-weight: 300;
 }
 
 .pointsValue {
-  display: flex;
-  align-items: center;
-  font-size: 25px;
-  font-weight: 600;
+  font-size: 23px;
+  font-weight: 500;
+  margin-top: 18px;
+  color: #000000;
 }
 
-
-.tw1{
+.tw1 {
   font-size: 0.75rem;
 }

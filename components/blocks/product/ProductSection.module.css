@@ -1,5 +1,6 @@
 .sectionHorizontal {
-  padding: 12px 16px 0;
+  width: 100%;
+  padding: 12px 0px 0 0;
 }
 
 .sectionGrid {
@@ -11,17 +12,19 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
+  padding: 0;
 }
 
 .titleHorizontal {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
+  padding-left: 16px;
 }
 
 .titleGrid {
   margin: 0;
-  font-size: 21px;
+  font-size: 20px;
   font-weight: 600;
 }
 
@@ -35,6 +38,7 @@
   cursor: pointer;
   color: #7e7e7e;
   font-weight: 500;
+  padding-right: 16px;
 }
 
 .allText {
@@ -47,10 +51,13 @@
 }
 
 .row {
+  width: 100%;
   display: flex;
   gap: 11px;
   overflow-x: auto;
   padding-bottom: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .grid {
